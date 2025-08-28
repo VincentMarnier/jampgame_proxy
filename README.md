@@ -1,11 +1,11 @@
-# JKA_YBEProxy
-Educational project on the creation of a proxy between the server engine and the game module of the game STAR WARS™ Jedi Knight - Jedi Academy™
+# jampgame_proxy
+
+Proxy between the server engine and the game module of the game STAR WARS™ Jedi Knight - Jedi Academy™.
+This aims to add features to yberion's original work [JKA_YBEProxy](https://github.com/Yberion/JKA_YBEProxy)
 
 ## Compilation
 
-To compile a 32bits version on a 64bits linux distribution add the following define when generating the CMAKE files:
-
-``cmake .. -DTARGET_ARCH=x86``
+You can use `build.sh` to build the proxy by yourself.
 
 Patchnote : https://hackmd.io/E6LOdJOVQBi4pr1S7z11UA
 
