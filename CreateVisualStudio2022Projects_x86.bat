@@ -1,4 +1,4 @@
-@REM Create JKA_YBEProxy projects for Visual Studio 2022 using CMake
+@REM Create JampgameProxy projects for Visual Studio 2022 using CMake
 @echo off
 for %%X in (cmake.exe) do (set FOUND=%%~$PATH:X)
 if not defined FOUND (

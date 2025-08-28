@@ -17,287 +17,287 @@
 #============================================================================
 
 # Make sure the user is not executing this script directly
-if(NOT InJKA_YBEProxy)
+if(NOT InJampgameProxy)
 	message(FATAL_ERROR "Use the top-level cmake script!")
-endif(NOT InJKA_YBEProxy)
+endif(NOT InJampgameProxy)
 
 set(MPSharedDefines ${SharedDefines})
 
-set(JKA_YBEProxyIncludeDirectories "${JKA_YBEProxyDir}")
+set(JampgameProxyIncludeDirectories "${JampgameProxyDir}")
 
 if(WIN32)
-	set(JKA_YBEProxyLibraries "winmm")
+	set(JampgameProxyLibraries "winmm")
 endif(WIN32)
 
 #============================================================================
-# src/JKA_YBEProxy
+# src/JampgameProxy
 #============================================================================
 
-set(JKA_YBEProxyDefines ${MPSharedDefines} "_GAME" )
-set(JKA_YBEProxyMainFiles
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Proxy_ClientCommand.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Proxy_ClientCommand.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Proxy_CVars.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Proxy_CVars.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Proxy_Files.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Proxy_Files.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Proxy_Header.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Proxy_Main.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Proxy_Main.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Proxy_SharedAPI.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Proxy_SharedAPI.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Proxy_Shell.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Proxy_Translate_SystemCalls.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Proxy_Translate_SystemCalls.hpp"
+set(JampgameProxyDefines ${MPSharedDefines} "_GAME" )
+set(JampgameProxyMainFiles
+	"${JampgameProxyDir}/jampgame_proxy/Proxy_ClientCommand.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/Proxy_ClientCommand.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/Proxy_CVars.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/Proxy_CVars.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/Proxy_Files.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/Proxy_Files.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/Proxy_Header.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/Proxy_Main.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/Proxy_Main.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/Proxy_SharedAPI.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/Proxy_SharedAPI.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/Proxy_Shell.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/Proxy_Translate_SystemCalls.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/Proxy_Translate_SystemCalls.hpp"
 	)
-source_group("src/JKA_YBEProxy" FILES ${JKA_YBEProxyMainFiles})
-set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxyMainFiles})
+source_group("src/JampgameProxy" FILES ${JampgameProxyMainFiles})
+set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyMainFiles})
 
 #============================================================================
-# src/JKA_YBEProxy/Imports/game
+# src/jampgame_proxy/Imports/game
 #============================================================================
 
-set(JKA_YBEProxyImportsGameFiles
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Imports/game/g_cmds.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Imports/game/g_cmds.hpp"
+set(JampgameProxyImportsGameFiles
+	"${JampgameProxyDir}/jampgame_proxy/Imports/game/g_cmds.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/Imports/game/g_cmds.hpp"
 	)
-source_group("src/JKA_YBEProxy/Imports/game" FILES ${JKA_YBEProxyImportsGameFiles})
-set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxyImportsGameFiles})
+source_group("src/jampgame_proxy/Imports/game" FILES ${JampgameProxyImportsGameFiles})
+set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyImportsGameFiles})
 
 #============================================================================
-# src/JKA_YBEProxy/Imports/qcommon
+# src/jampgame_proxy/Imports/qcommon
 #============================================================================
 
-set(JKA_YBEProxyImportsQcommonFiles
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Imports/qcommon/cvar.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Imports/qcommon/cvar.hpp"
+set(JampgameProxyImportsQcommonFiles
+	"${JampgameProxyDir}/jampgame_proxy/Imports/qcommon/cvar.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/Imports/qcommon/cvar.hpp"
 	)
-source_group("src/JKA_YBEProxy/Imports/qcommon" FILES ${JKA_YBEProxyImportsQcommonFiles})
-set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxyImportsQcommonFiles})
+source_group("src/jampgame_proxy/Imports/qcommon" FILES ${JampgameProxyImportsQcommonFiles})
+set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyImportsQcommonFiles})
 
 #============================================================================
-# src/JKA_YBEProxy/Imports/server
+# src/jampgame_proxy/Imports/server
 #============================================================================
 
-set(JKA_YBEProxyImportsServerFiles
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Imports/server/sv_game.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Imports/server/sv_game.hpp"
+set(JampgameProxyImportsServerFiles
+	"${JampgameProxyDir}/jampgame_proxy/Imports/server/sv_game.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/Imports/server/sv_game.hpp"
 	)
-source_group("src/JKA_YBEProxy/Imports/server" FILES ${JKA_YBEProxyImportsServerFiles})
-set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxyImportsServerFiles})
+source_group("src/jampgame_proxy/Imports/server" FILES ${JampgameProxyImportsServerFiles})
+set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyImportsServerFiles})
 
 #============================================================================
-# src/JKA_YBEProxy/RuntimePatch/Engine
+# src/jampgame_proxy/RuntimePatch/Engine
 #============================================================================
 
-set(JKA_YBEProxyRuntimePatchEngineFiles
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Proxy_Engine_Client.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Proxy_Engine_Client.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Proxy_Engine_ClientCommand.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Proxy_Engine_ClientCommand.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Proxy_Engine_Patch.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Proxy_Engine_Patch.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Proxy_Engine_Utils.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Proxy_Engine_Wrappers.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Proxy_Engine_Wrappers.hpp"
+set(JampgameProxyRuntimePatchEngineFiles
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Proxy_Engine_Client.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Proxy_Engine_Client.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Proxy_Engine_ClientCommand.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Proxy_Engine_ClientCommand.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Proxy_Engine_Patch.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Proxy_Engine_Patch.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Proxy_Engine_Utils.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Proxy_Engine_Wrappers.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Proxy_Engine_Wrappers.hpp"
 	)
-source_group("src/JKA_YBEProxy/RuntimePatch/Engine" FILES ${JKA_YBEProxyRuntimePatchEngineFiles})
-set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxyRuntimePatchEngineFiles})
+source_group("src/jampgame_proxy/RuntimePatch/Engine" FILES ${JampgameProxyRuntimePatchEngineFiles})
+set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyRuntimePatchEngineFiles})
 
 #============================================================================
-# src/JKA_YBEProxy/RuntimePatch/Engine/Patches/qcommon
+# src/jampgame_proxy/RuntimePatch/Engine/Patches/qcommon
 #============================================================================
 
-set(JKA_YBEProxyRuntimePatchEnginePatchesQcommonFiles
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/qcommon/Proxy_cmd.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/qcommon/Proxy_cmd.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/qcommon/Proxy_common.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/qcommon/Proxy_common.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/qcommon/Proxy_files.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/qcommon/Proxy_files.hpp"
+set(JampgameProxyRuntimePatchEnginePatchesQcommonFiles
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/qcommon/Proxy_cmd.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/qcommon/Proxy_cmd.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/qcommon/Proxy_common.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/qcommon/Proxy_common.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/qcommon/Proxy_files.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/qcommon/Proxy_files.hpp"
 	)
-source_group("src/JKA_YBEProxy/RuntimePatch/Engine/Patches/qcommon" FILES ${JKA_YBEProxyRuntimePatchEnginePatchesQcommonFiles})
-set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxyRuntimePatchEnginePatchesQcommonFiles})
+source_group("src/jampgame_proxy/RuntimePatch/Engine/Patches/qcommon" FILES ${JampgameProxyRuntimePatchEnginePatchesQcommonFiles})
+set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyRuntimePatchEnginePatchesQcommonFiles})
 
 #============================================================================
-# src/JKA_YBEProxy/RuntimePatch/Engine/Patches/server
+# src/jampgame_proxy/RuntimePatch/Engine/Patches/server
 #============================================================================
 
-set(JKA_YBEProxyRuntimePatchEnginePatchesServerFiles
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/server/Proxy_sv_ccmds.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/server/Proxy_sv_ccmds.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/server/Proxy_sv_client.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/server/Proxy_sv_client.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/server/Proxy_sv_game.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/server/Proxy_sv_game.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/server/Proxy_sv_main.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/server/Proxy_sv_main.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/server/Proxy_sv_snapshot.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/Engine/Patches/server/Proxy_sv_snapshot.hpp"
+set(JampgameProxyRuntimePatchEnginePatchesServerFiles
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/server/Proxy_sv_ccmds.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/server/Proxy_sv_ccmds.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/server/Proxy_sv_client.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/server/Proxy_sv_client.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/server/Proxy_sv_game.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/server/Proxy_sv_game.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/server/Proxy_sv_main.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/server/Proxy_sv_main.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/server/Proxy_sv_snapshot.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/server/Proxy_sv_snapshot.hpp"
 	)
-source_group("src/JKA_YBEProxy/RuntimePatch/Engine/Patches/server" FILES ${JKA_YBEProxyRuntimePatchEnginePatchesServerFiles})
-set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxyRuntimePatchEnginePatchesServerFiles})
+source_group("src/jampgame_proxy/RuntimePatch/Engine/Patches/server" FILES ${JampgameProxyRuntimePatchEnginePatchesServerFiles})
+set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyRuntimePatchEnginePatchesServerFiles})
 
 #============================================================================
-# src/JKA_YBEProxy/RuntimePatch/HookUtils
+# src/jampgame_proxy/RuntimePatch/HookUtils
 #============================================================================
 
-set(JKA_YBEProxyHookUtilsFiles
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/HookUtils/HookUtils.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/HookUtils/HookUtils.hpp"
+set(JampgameProxyHookUtilsFiles
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/HookUtils/HookUtils.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/HookUtils/HookUtils.hpp"
 	)
-source_group("src/JKA_YBEProxy/RuntimePatch/HookUtils" FILES ${JKA_YBEProxyHookUtilsFiles})
-set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxyHookUtilsFiles})
+source_group("src/jampgame_proxy/RuntimePatch/HookUtils" FILES ${JampgameProxyHookUtilsFiles})
+set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyHookUtilsFiles})
 
 #============================================================================
-# src/JKA_YBEProxy/RuntimePatch/HookUtils/LengthDisassembler/
+# src/jampgame_proxy/RuntimePatch/HookUtils/LengthDisassembler/
 #============================================================================
 
-set(JKA_YBEProxyLengthDisassemblerFiles
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/HookUtils/LengthDisassembler/hde.hpp"
+set(JampgameProxyLengthDisassemblerFiles
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/HookUtils/LengthDisassembler/hde.hpp"
 	)
-source_group("src/JKA_YBEProxy/RuntimePatch/HookUtils/LengthDisassembler" FILES ${JKA_YBEProxyLengthDisassemblerFiles})
-set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxyLengthDisassemblerFiles})
+source_group("src/jampgame_proxy/RuntimePatch/HookUtils/LengthDisassembler" FILES ${JampgameProxyLengthDisassemblerFiles})
+set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyLengthDisassemblerFiles})
 
 if (CMAKE_SIZEOF_VOID_P EQUAL 4 OR "${TARGET_ARCH}" MATCHES "x86")
 	#============================================================================
-	# src/JKA_YBEProxy/RuntimePatch/HookUtils/LengthDisassembler/x86
+	# src/jampgame_proxy/RuntimePatch/HookUtils/LengthDisassembler/x86
 	#============================================================================
 
-	set(JKA_YBEProxyLengthDisassemblerX86Files
-		"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/HookUtils/LengthDisassembler/x86/hde32.cpp"
-		"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/HookUtils/LengthDisassembler/x86/hde32.hpp"
-		"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/HookUtils/LengthDisassembler/x86/table32.hpp"
+	set(JampgameProxyLengthDisassemblerX86Files
+		"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/HookUtils/LengthDisassembler/x86/hde32.cpp"
+		"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/HookUtils/LengthDisassembler/x86/hde32.hpp"
+		"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/HookUtils/LengthDisassembler/x86/table32.hpp"
 		)
-	source_group("src/JKA_YBEProxy/RuntimePatch/HookUtils/LengthDisassembler/x86" FILES ${JKA_YBEProxyLengthDisassemblerX86Files})
-	set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxyLengthDisassemblerX86Files})
+	source_group("src/jampgame_proxy/RuntimePatch/HookUtils/LengthDisassembler/x86" FILES ${JampgameProxyLengthDisassemblerX86Files})
+	set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyLengthDisassemblerX86Files})
 else ()
 	#============================================================================
-	# src/JKA_YBEProxy/RuntimePatch/HookUtils/LengthDisassembler/x64
+	# src/jampgame_proxy/RuntimePatch/HookUtils/LengthDisassembler/x64
 	#============================================================================
 
-	set(JKA_YBEProxyLengthDisassemblerX64Files
-		"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/HookUtils/LengthDisassembler/x64/hde64.cpp"
-		"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/HookUtils/LengthDisassembler/x64/hde64.hpp"
-		"${JKA_YBEProxyDir}/JKA_YBEProxy/RuntimePatch/HookUtils/LengthDisassembler/x64/table64.hpp"
+	set(JampgameProxyLengthDisassemblerX64Files
+		"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/HookUtils/LengthDisassembler/x64/hde64.cpp"
+		"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/HookUtils/LengthDisassembler/x64/hde64.hpp"
+		"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/HookUtils/LengthDisassembler/x64/table64.hpp"
 		)
-	source_group("src/JKA_YBEProxy/RuntimePatch/HookUtils/LengthDisassembler/x64" FILES ${JKA_YBEProxyLengthDisassemblerX64Files})
-	set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxyLengthDisassemblerX64Files})
+	source_group("src/jampgame_proxy/RuntimePatch/HookUtils/LengthDisassembler/x64" FILES ${JampgameProxyLengthDisassemblerX64Files})
+	set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyLengthDisassemblerX64Files})
 endif ()
 
 #============================================================================
-# src/JKA_YBEProxy/Wrappers
+# src/jampgame_proxy/Wrappers
 #============================================================================
 
-set(JKA_YBEProxyWrapperFiles
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Wrappers/Proxy_OpenJKAPI_Wrappers.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Wrappers/Proxy_OpenJKAPI_Wrappers.hpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Wrappers/Proxy_OriginalAPI_Wrappers.cpp"
-	"${JKA_YBEProxyDir}/JKA_YBEProxy/Wrappers/Proxy_OriginalAPI_Wrappers.hpp"
+set(JampgameProxyWrapperFiles
+	"${JampgameProxyDir}/jampgame_proxy/Wrappers/Proxy_OpenJKAPI_Wrappers.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/Wrappers/Proxy_OpenJKAPI_Wrappers.hpp"
+	"${JampgameProxyDir}/jampgame_proxy/Wrappers/Proxy_OriginalAPI_Wrappers.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/Wrappers/Proxy_OriginalAPI_Wrappers.hpp"
 	)
-source_group("src/JKA_YBEProxy/Wrapper" FILES ${JKA_YBEProxyWrapperFiles})
-set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxyWrapperFiles})
+source_group("src/jampgame_proxy/Wrapper" FILES ${JampgameProxyWrapperFiles})
+set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyWrapperFiles})
 
 #============================================================================
 # src/sdk/server
 #============================================================================
 
-set(JKA_YBEProxyServerFiles
-	"${JKA_YBEProxyDir}/sdk/server/server.hpp"
-	"${JKA_YBEProxyDir}/sdk/server/sv_client.cpp"
-	"${JKA_YBEProxyDir}/sdk/server/sv_client.hpp"
+set(JampgameProxyServerFiles
+	"${JampgameProxyDir}/sdk/server/server.hpp"
+	"${JampgameProxyDir}/sdk/server/sv_client.cpp"
+	"${JampgameProxyDir}/sdk/server/sv_client.hpp"
 	)
-source_group("src/sdk/server" FILES ${JKA_YBEProxyServerFiles})
-set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxyServerFiles})
+source_group("src/sdk/server" FILES ${JampgameProxyServerFiles})
+set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyServerFiles})
 
 #============================================================================
 # src/sdk/sys
 #============================================================================
 
-set(JKA_YBEProxySysFiles
-	"${JKA_YBEProxyDir}/sdk/sys/sys_public.hpp"
+set(JampgameProxySysFiles
+	"${JampgameProxyDir}/sdk/sys/sys_public.hpp"
 	)
-source_group("src/sdk/sys" FILES ${JKA_YBEProxySysFiles})
-set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxySysFiles})
+source_group("src/sdk/sys" FILES ${JampgameProxySysFiles})
+set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxySysFiles})
 
 #============================================================================
 # src/sdk/qcommon
 #============================================================================
 
-set(JKA_YBEProxyDSKCommonFiles
-	"${JKA_YBEProxyDir}/sdk/qcommon/disablewarnings.hpp"
-	"${JKA_YBEProxyDir}/sdk/qcommon/files.cpp"
-	"${JKA_YBEProxyDir}/sdk/qcommon/game_version.hpp"
-	"${JKA_YBEProxyDir}/sdk/qcommon/q_color.hpp"
-	"${JKA_YBEProxyDir}/sdk/qcommon/q_math.hpp"
-	"${JKA_YBEProxyDir}/sdk/qcommon/q_platform.hpp"
-	"${JKA_YBEProxyDir}/sdk/qcommon/q_shared.cpp"
-	"${JKA_YBEProxyDir}/sdk/qcommon/q_shared.hpp"
-	"${JKA_YBEProxyDir}/sdk/qcommon/q_string.cpp"
-	"${JKA_YBEProxyDir}/sdk/qcommon/q_string.hpp"
-	"${JKA_YBEProxyDir}/sdk/qcommon/qcommon.hpp"
-	"${JKA_YBEProxyDir}/sdk/qcommon/tags.hpp"
+set(JampgameProxyDSKCommonFiles
+	"${JampgameProxyDir}/sdk/qcommon/disablewarnings.hpp"
+	"${JampgameProxyDir}/sdk/qcommon/files.cpp"
+	"${JampgameProxyDir}/sdk/qcommon/game_version.hpp"
+	"${JampgameProxyDir}/sdk/qcommon/q_color.hpp"
+	"${JampgameProxyDir}/sdk/qcommon/q_math.hpp"
+	"${JampgameProxyDir}/sdk/qcommon/q_platform.hpp"
+	"${JampgameProxyDir}/sdk/qcommon/q_shared.cpp"
+	"${JampgameProxyDir}/sdk/qcommon/q_shared.hpp"
+	"${JampgameProxyDir}/sdk/qcommon/q_string.cpp"
+	"${JampgameProxyDir}/sdk/qcommon/q_string.hpp"
+	"${JampgameProxyDir}/sdk/qcommon/qcommon.hpp"
+	"${JampgameProxyDir}/sdk/qcommon/tags.hpp"
 	)
-source_group("src/sdk/qcommon" FILES ${JKA_YBEProxyDSKCommonFiles})
-set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxyDSKCommonFiles})
+source_group("src/sdk/qcommon" FILES ${JampgameProxyDSKCommonFiles})
+set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyDSKCommonFiles})
 
 #============================================================================
 # src/sdk/game
 #============================================================================
 
-set(JKA_YBEProxySDKGameFiles
-	"${JKA_YBEProxyDir}/sdk/game/ai.hpp"
-	"${JKA_YBEProxyDir}/sdk/game/anims.hpp"
-	"${JKA_YBEProxyDir}/sdk/game/b_public.hpp"
-	"${JKA_YBEProxyDir}/sdk/game/bg_public.hpp"
-	"${JKA_YBEProxyDir}/sdk/game/bg_vehicles.hpp"
-	"${JKA_YBEProxyDir}/sdk/game/bg_weapons.hpp"
-	"${JKA_YBEProxyDir}/sdk/game/g_local.hpp"
-	"${JKA_YBEProxyDir}/sdk/game/g_public.hpp"
-	"${JKA_YBEProxyDir}/sdk/game/g_team.hpp"
-	"${JKA_YBEProxyDir}/sdk/game/g_xcvar.hpp"
-	"${JKA_YBEProxyDir}/sdk/game/surfaceflags.hpp"
-	"${JKA_YBEProxyDir}/sdk/game/teams.hpp"
+set(JampgameProxySDKGameFiles
+	"${JampgameProxyDir}/sdk/game/ai.hpp"
+	"${JampgameProxyDir}/sdk/game/anims.hpp"
+	"${JampgameProxyDir}/sdk/game/b_public.hpp"
+	"${JampgameProxyDir}/sdk/game/bg_public.hpp"
+	"${JampgameProxyDir}/sdk/game/bg_vehicles.hpp"
+	"${JampgameProxyDir}/sdk/game/bg_weapons.hpp"
+	"${JampgameProxyDir}/sdk/game/g_local.hpp"
+	"${JampgameProxyDir}/sdk/game/g_public.hpp"
+	"${JampgameProxyDir}/sdk/game/g_team.hpp"
+	"${JampgameProxyDir}/sdk/game/g_xcvar.hpp"
+	"${JampgameProxyDir}/sdk/game/surfaceflags.hpp"
+	"${JampgameProxyDir}/sdk/game/teams.hpp"
 	)
-source_group("src/sdk/game" FILES ${JKA_YBEProxySDKGameFiles})
-set(JKA_YBEProxyFiles ${JKA_YBEProxyFiles} ${JKA_YBEProxySDKGameFiles})
+source_group("src/sdk/game" FILES ${JampgameProxySDKGameFiles})
+set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxySDKGameFiles})
 
-add_library(${JKA_YBEProxy} SHARED ${JKA_YBEProxyFiles})
+add_library(${JampgameProxy} SHARED ${JampgameProxyFiles})
 
 if(NOT MSVC)
 	# remove "lib" prefix for .so/.dylib files
-	set_target_properties(${JKA_YBEProxy} PROPERTIES PREFIX "")
+	set_target_properties(${JampgameProxy} PROPERTIES PREFIX "")
 endif()
-set_target_properties(${JKA_YBEProxy} PROPERTIES COMPILE_DEFINITIONS "${JKA_YBEProxyDefines}")
+set_target_properties(${JampgameProxy} PROPERTIES COMPILE_DEFINITIONS "${JampgameProxyDefines}")
 
 # Hide symbols not explicitly marked public.
-set_property(TARGET ${JKA_YBEProxy} APPEND PROPERTY COMPILE_OPTIONS ${JKA_YBEProxy_VISIBILITY_FLAGS})
+set_property(TARGET ${JampgameProxy} APPEND PROPERTY COMPILE_OPTIONS ${JampgameProxy_VISIBILITY_FLAGS})
 
-set_target_properties(${JKA_YBEProxy} PROPERTIES INCLUDE_DIRECTORIES "${JKA_YBEProxyIncludeDirectories}")
-set_target_properties(${JKA_YBEProxy} PROPERTIES PROJECT_LABEL "JKA_YBEProxy Library")
+set_target_properties(${JampgameProxy} PROPERTIES INCLUDE_DIRECTORIES "${JampgameProxyIncludeDirectories}")
+set_target_properties(${JampgameProxy} PROPERTIES PROJECT_LABEL "JampgameProxy Library")
 # no libraries used
-if(JKA_YBEProxyLibraries)
-	target_link_libraries(${JKA_YBEProxy} ${JKA_YBEProxyLibraries})
-endif(JKA_YBEProxyLibraries)
+if(JampgameProxyLibraries)
+	target_link_libraries(${JampgameProxy} ${JampgameProxyLibraries})
+endif(JampgameProxyLibraries)
 
-set(JKA_YBEProxyLibsBuilt)
-if(BuildJKA_YBEProxy)
-	set(JKA_YBEProxyLibsBuilt ${JKA_YBEProxyLibsBuilt} ${JKA_YBEProxy})
+set(JampgameProxyLibsBuilt)
+if(BuildJampgameProxy)
+	set(JampgameProxyLibsBuilt ${JampgameProxyLibsBuilt} ${JampgameProxy})
 endif()
 
 if(WIN32)
-	set(JKA_YBEProxyLibFullPaths)
+	set(JampgameProxyLibFullPaths)
 	if(MSVC)
-		foreach(JKA_YBEProxyLib ${JKA_YBEProxyLibsBuilt})
-			set(JKA_YBEProxyLibFullPaths
-				${JKA_YBEProxyLibFullPaths}
-				${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${JKA_YBEProxyLib}${CMAKE_SHARED_LIBRARY_SUFFIX})
-		endforeach(JKA_YBEProxyLib)
+		foreach(JampgameProxyLib ${JampgameProxyLibsBuilt})
+			set(JampgameProxyLibFullPaths
+				${JampgameProxyLibFullPaths}
+				${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${JampgameProxyLib}${CMAKE_SHARED_LIBRARY_SUFFIX})
+		endforeach(JampgameProxyLib)
 	else()
-		foreach(JKA_YBEProxyLib ${JKA_YBEProxyLibsBuilt})
-			set(JKA_YBEProxyLibFullPaths
-				${JKA_YBEProxyLibFullPaths}
-				${CMAKE_BINARY_DIR}/${JKA_YBEProxyLib}${CMAKE_SHARED_LIBRARY_SUFFIX})
-		endforeach(JKA_YBEProxyLib)
+		foreach(JampgameProxyLib ${JampgameProxyLibsBuilt})
+			set(JampgameProxyLibFullPaths
+				${JampgameProxyLibFullPaths}
+				${CMAKE_BINARY_DIR}/${JampgameProxyLib}${CMAKE_SHARED_LIBRARY_SUFFIX})
+		endforeach(JampgameProxyLib)
 	endif()
 endif()
