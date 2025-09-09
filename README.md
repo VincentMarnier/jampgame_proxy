@@ -11,7 +11,7 @@ This aims to add features to yberion's original work [JKA_YBEProxy](https://gith
 
 ## How it works?
 
-`jampded` use the load the proxy and use it as any `jampgamei386.so`. The proxy forwards instructions to `jampgame_original.so`. Some functions are hooked so we can patch them or add features to them.
+`jampded` loads the proxy and use it as any `jampgamei386.so`. The proxy forwards instructions to `jampgame_original.so`. Some functions are hooked so we can patch them or add features to them.
 
 ## Compilation
 
@@ -20,3 +20,11 @@ You can use `build.sh` to build the proxy by yourself.
 ## Notes
 
 Feel free to contact me or to make a PR is you want to see anything added to it.
+
+## Hooking a jampgamei386 function
+
+1. Simply run `nm -D jampgamei386.so | grep <FUNCTION_NAME>` to get its address.
+2. Add it to `Proxy_Engine_Wrappers.hpp` (see `jampgame_func_*_addr`).
+3. Add a pointer to the original function and create the proxy function in `src/jampgame_proxy/RuntimePatch/Engina/Patches` 
+4. Hook it by adding it to `jampgameHookEntries` in `Proxy_Engine_Patch.cpp`. Make it use your functions.
+5. Enjoy!
