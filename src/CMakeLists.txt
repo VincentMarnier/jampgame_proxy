@@ -7,10 +7,6 @@ set(MPSharedDefines ${SharedDefines})
 
 set(JampgameProxyIncludeDirectories "${JampgameProxyDir}")
 
-if(WIN32)
-	set(JampgameProxyLibraries "winmm")
-endif(WIN32)
-
 #============================================================================
 # src/JampgameProxy
 #============================================================================
@@ -28,7 +24,6 @@ set(JampgameProxyMainFiles
 	"${JampgameProxyDir}/jampgame_proxy/Proxy_Main.hpp"
 	"${JampgameProxyDir}/jampgame_proxy/Proxy_SharedAPI.cpp"
 	"${JampgameProxyDir}/jampgame_proxy/Proxy_SharedAPI.hpp"
-	"${JampgameProxyDir}/jampgame_proxy/Proxy_Shell.hpp"
 	"${JampgameProxyDir}/jampgame_proxy/Proxy_Translate_SystemCalls.hpp"
 	"${JampgameProxyDir}/jampgame_proxy/Proxy_Translate_SystemCalls.cpp"
 	"${JampgameProxyDir}/jampgame_proxy/Proxy_Utils.hpp"
@@ -158,10 +153,8 @@ target_include_directories(${JampgameProxy} PRIVATE "${JampgameProxyDir}/sdk/")
 # Add Zydis static lib
 target_link_libraries(${JampgameProxy} PRIVATE "Zydis")
 
-if(NOT MSVC)
-	# remove "lib" prefix for .so/.dylib files
-	set_target_properties(${JampgameProxy} PROPERTIES PREFIX "")
-endif()
+# remove "lib" prefix for .so/.dylib files
+set_target_properties(${JampgameProxy} PROPERTIES PREFIX "")
 set_target_properties(${JampgameProxy} PROPERTIES COMPILE_DEFINITIONS "${JampgameProxyDefines}")
 
 # Hide symbols not explicitly marked public.
@@ -177,21 +170,4 @@ endif(JampgameProxyLibraries)
 set(JampgameProxyLibsBuilt)
 if(BuildJampgameProxy)
 	set(JampgameProxyLibsBuilt ${JampgameProxyLibsBuilt} ${JampgameProxy})
-endif()
-
-if(WIN32)
-	set(JampgameProxyLibFullPaths)
-	if(MSVC)
-		foreach(JampgameProxyLib ${JampgameProxyLibsBuilt})
-			set(JampgameProxyLibFullPaths
-				${JampgameProxyLibFullPaths}
-				${CMAKE_BINARY_DIR}/${CMAKE_CFG_INTDIR}/${JampgameProxyLib}${CMAKE_SHARED_LIBRARY_SUFFIX})
-		endforeach(JampgameProxyLib)
-	else()
-		foreach(JampgameProxyLib ${JampgameProxyLibsBuilt})
-			set(JampgameProxyLibFullPaths
-				${JampgameProxyLibFullPaths}
-				${CMAKE_BINARY_DIR}/${JampgameProxyLib}${CMAKE_SHARED_LIBRARY_SUFFIX})
-		endforeach(JampgameProxyLib)
-	endif()
 endif()

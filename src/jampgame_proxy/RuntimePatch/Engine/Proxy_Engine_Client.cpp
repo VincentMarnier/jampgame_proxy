@@ -44,17 +44,6 @@ void Proxy_Engine_Client_CalcPacketsAndFPS(int clientNum, int* packets, int* fps
 // Some clientside timings (delta or whatever) that we can't calc here (I think)
 static inline int Proxy_GetTimenudgeMagicOffset(int svFps)
 {
-#if defined(_WIN32) && !defined(MINGW32)
-	constexpr int magicOffsets[] = {
-		21, 18, 18, 17, 18, 16, 14, 13, 12, 13, // [20, 29]
-		13, 20, 10, 9, 9, 9, 8, 9, 9, 9,		// [30, 39]
-		9, 5, 6, 6, 5, 5, 6, 6, 5, 5, 			// [40, 49]
-		5, 5, 5, 4, 4, 4, 5, 5, 5, 3, 			// [50, 59]
-		0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 			// [60, 69] DO NOT USE 60, 61, 62
-		1, 0, 0, 0, 0, 0, 0, 0, 0, 0,			// [70, 79]
-		0										// [80[
-	};
-#else
 	constexpr int magicOffsets[] = {
 		18, 15, 15, 13, 14, 14, 11, 10, 9, 10,				// [20, 29]
 		10, 0, 0, 0, 0, -21, -21, -21, -21, -19,			// [30, 39] DO NOT USE 31, 32, 33, 34
@@ -64,7 +53,6 @@ static inline int Proxy_GetTimenudgeMagicOffset(int svFps)
 		-28, -28, -28, -28, -28, -28, -27, -26, -26, -27,	// [70, 79]
 		-27													// [80[
 	};
-#endif
 	constexpr int tableSize = sizeof(magicOffsets) / sizeof(magicOffsets[0]);
 
 	int index = 0;

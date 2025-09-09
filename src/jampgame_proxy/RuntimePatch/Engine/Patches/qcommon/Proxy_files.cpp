@@ -103,12 +103,4 @@ void QDECL Proxy_Com_Printf(const char* fmt, ...)
 			server.common.functions.FS_Write(msg, (int)strlen(msg), *server.common.vars.logfile);
 		}
 	}
-
-#if defined(_WIN32) && defined(_DEBUG)
-	if (*msg)
-	{
-		OutputDebugString(Q_CleanStr(msg));
-		OutputDebugString("\n");
-	}
-#endif
 }
