@@ -5,7 +5,7 @@
 #ifndef __WEAPONS_H__
 #define __WEAPONS_H__
 
-typedef enum {
+enum {
 	WP_NONE,
 
 	WP_STUN_BATON,
@@ -42,7 +42,7 @@ typedef int weapon_t;
 //anything > this will be considered not player useable
 #define LAST_USEABLE_WEAPON			WP_BRYAR_OLD
 
-typedef enum //# ammo_e
+enum ammo_t//# ammo_e
 {
 	AMMO_NONE,
 	AMMO_FORCE,		// AMMO_PHASER
@@ -55,7 +55,7 @@ typedef enum //# ammo_e
 	AMMO_TRIPMINE,
 	AMMO_DETPACK,
 	AMMO_MAX
-} ammo_t;
+} ;
 
 
 typedef struct weaponData_s

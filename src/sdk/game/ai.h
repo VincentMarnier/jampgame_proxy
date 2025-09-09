@@ -2,18 +2,18 @@
 #define __AI__
 
 //Distance ratings
-typedef enum
+enum distance_e
 {
 	DIST_MELEE,
 	DIST_LONG,
-} distance_e;
+};
 
 //Attack types
-typedef enum
+enum attack_e
 {
 	ATTACK_MELEE,
 	ATTACK_RANGE,
-} attack_e;
+};
 
 enum
 {
@@ -28,7 +28,7 @@ enum
 };
 
 //sigh... had to move in here for groupInfo
-typedef enum //# rank_e
+enum rank_t//# rank_e
 {
 	RANK_CIVILIAN,
 	RANK_CREWMAN,
@@ -38,7 +38,7 @@ typedef enum //# rank_e
 	RANK_LT_COMM,
 	RANK_COMMANDER,
 	RANK_CAPTAIN
-} rank_t;
+};
 
 qboolean NPC_CheckPlayerTeamStealth( void );
 

@@ -6,7 +6,7 @@
 typedef struct Vehicle_s Vehicle_t;
 typedef struct bgEntity_s bgEntity_t;
 
-typedef enum
+enum vehicleType_t
 {
 	VH_NONE = 0,	//0 just in case anyone confuses VH_NONE and VEHICLE_NONE below
 	VH_WALKER,		//something you ride inside of, it walks like you, like an AT-ST
@@ -15,19 +15,17 @@ typedef enum
 	VH_ANIMAL,		//animal you ride on top of that walks, like a tauntaun
 	VH_FLIER,		//animal you ride on top of that flies, like a giant mynoc?
 	VH_NUM_VEHICLES
-} vehicleType_t;
+};
 
-typedef enum	
+enum EWeaponPose
 {
 	WPOSE_NONE	= 0,
 	WPOSE_BLASTER,
 	WPOSE_SABERLEFT,
 	WPOSE_SABERRIGHT,
-} EWeaponPose;
+};
 
-#include "../namespace_begin.h"
 extern stringID_table_t VehicleTable[VH_NUM_VEHICLES+1];
-#include "../namespace_end.h"
 
 //===========================================================================================================
 //START VEHICLE WEAPONS
@@ -71,10 +69,8 @@ typedef struct
 #define VEH_WEAPON_BASE	0
 #define VEH_WEAPON_NONE	-1
 
-#include "../namespace_begin.h"
 extern vehWeaponInfo_t g_vehWeaponInfo[MAX_VEH_WEAPONS];
 extern int	numVehicleWeapons;
-#include "../namespace_end.h"
 
 //===========================================================================================================
 //END VEHICLE WEAPONS
@@ -366,10 +362,8 @@ typedef struct
 #define VEHICLE_BASE	0
 #define VEHICLE_NONE	-1
 
-#include "../namespace_begin.h"
 extern vehicleInfo_t g_vehicleInfo[MAX_VEHICLES];
 extern int	numVehicles;
-#include "../namespace_end.h"
 
 #define VEH_DEFAULT_SPEED_MAX		800.0f
 #define VEH_DEFAULT_ACCEL			10.0f
@@ -403,7 +397,7 @@ extern int	numVehicles;
 #define	VEH_MOUNT_THROW_RIGHT		-6
 
 
-typedef enum
+enum
 {
 	VEH_EJECT_LEFT, 
 	VEH_EJECT_RIGHT, 
@@ -414,14 +408,14 @@ typedef enum
 };
 
 // Vehicle flags.
-typedef enum
+enum vehFlags_t
 {
 	VEH_NONE = 0, VEH_FLYING = 0x00000001, VEH_CRASHING = 0x00000002,
 	VEH_LANDING = 0x00000004, VEH_BUCKING = 0x00000010, VEH_WINGSOPEN = 0x00000020,
 	VEH_GEARSOPEN = 0x00000040, VEH_SLIDEBREAKING = 0x00000080, VEH_SPINNING = 0x00000100,
 	VEH_OUTOFCONTROL = 0x00000200,
 	VEH_SABERINLEFTHAND = 0x00000400
-} vehFlags_t;
+};
 
 //defines for impact damage surface stuff
 #define	SHIPSURF_FRONT		0
@@ -622,8 +616,6 @@ typedef struct Vehicle_s
 
 } Vehicle_t;
 
-#include "../namespace_begin.h"
 extern int BG_VehicleGetIndex( const char *vehicleName );
-#include "../namespace_end.h"
 
 #endif	// __BG_VEHICLES_H

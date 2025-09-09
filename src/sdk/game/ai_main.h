@@ -4,11 +4,7 @@
 
 //#define FORCEJUMP_INSTANTMETHOD 1
 
-#ifdef _XBOX	// No bot has more than 150 bytes of chat right now
-#define MAX_CHAT_BUFFER_SIZE 256
-#else
 #define MAX_CHAT_BUFFER_SIZE 8192
-#endif
 #define MAX_CHAT_LINE_SIZE 128
 
 #define TABLE_BRANCH_DISTANCE 32
@@ -78,7 +74,7 @@
 
 #define BOT_SABER_THROW_RANGE		800
 
-typedef enum
+enum bot_ctf_state_t
 {
 	CTFSTATE_NONE,
 	CTFSTATE_ATTACKER,
@@ -87,24 +83,24 @@ typedef enum
 	CTFSTATE_GUARDCARRIER,
 	CTFSTATE_GETFLAGHOME,
 	CTFSTATE_MAXCTFSTATES
-} bot_ctf_state_t;
+};
 
-typedef enum
+enum bot_siege_state_t
 {
 	SIEGESTATE_NONE,
 	SIEGESTATE_ATTACKER,
 	SIEGESTATE_DEFENDER,
 	SIEGESTATE_MAXSIEGESTATES
-} bot_siege_state_t;
+};
 
-typedef enum
+enum bot_teamplay_state_t
 {
 	TEAMPLAYSTATE_NONE,
 	TEAMPLAYSTATE_FOLLOWING,
 	TEAMPLAYSTATE_ASSISTING,
 	TEAMPLAYSTATE_REGROUP,
 	TEAMPLAYSTATE_MAXTPSTATES
-} bot_teamplay_state_t;
+};
 
 typedef struct botattachment_s
 {
@@ -118,13 +114,8 @@ typedef struct nodeobject_s
 //	int index;
 	float weight;
 	int flags;
-#ifdef _XBOX
-	short	neighbornum;
-	short	inuse;
-#else
 	int neighbornum;
 	int inuse;
-#endif
 } nodeobject_t;
 
 typedef struct boteventtracker_s
@@ -394,15 +385,11 @@ extern float gDeactivated;
 extern float gBotEdit;
 extern int gWPRenderedFrame;
 
-#include "../namespace_begin.h"
 extern wpobject_t *gWPArray[MAX_WPARRAY_SIZE];
 extern int gWPNum;
-#include "../namespace_end.h"
 
 extern int gLastPrintedIndex;
-#ifndef _XBOX
 extern nodeobject_t nodetable[MAX_NODETABLE_SIZE];
-#endif
 extern int nodenum;
 
 extern int gLevelFlags;

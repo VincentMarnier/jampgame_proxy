@@ -88,16 +88,16 @@ extern vec3_t gPainPoint;
 extern char gSharedBuffer[MAX_G_SHARED_BUFFER_SIZE];
 
 // movers are things like doors, plats, buttons, etc
-typedef enum {
+enum moverState_t {
 	MOVER_POS1,
 	MOVER_POS2,
 	MOVER_1TO2,
 	MOVER_2TO1
-} moverState_t;
+};
 
 #define SP_PODIUM_MODEL		"models/mapobjects/podium/podium4.md3"
 
-typedef enum 
+enum 
 {
 	HL_NONE = 0,
 	HL_FOOT_RT,
@@ -365,24 +365,24 @@ struct gentity_s {
 #define DAMAGEREDIRECT_RLEG		2
 #define DAMAGEREDIRECT_LLEG		3
 
-typedef enum {
+enum {
 	CON_DISCONNECTED,
 	CON_CONNECTING,
 	CON_CONNECTED
 };
 typedef int clientConnected_t;
 
-typedef enum {
+enum spectatorState_t {
 	SPECTATOR_NOT,
 	SPECTATOR_FREE,
 	SPECTATOR_FOLLOW,
 	SPECTATOR_SCOREBOARD
-} spectatorState_t;
+};
 
-typedef enum {
+enum playerTeamStateState_t {
 	TEAM_BEGIN,		// Beginning a team game, spawn at base
 	TEAM_ACTIVE		// Now actively playing
-} playerTeamStateState_t;
+};
 
 typedef struct {
 	playerTeamStateState_t	state;
@@ -770,20 +770,20 @@ typedef struct
 
 #define	MAX_ALERT_EVENTS	32
 
-typedef enum
+enum alertEventType_e
 {
 	AET_SIGHT,
 	AET_SOUND,
-} alertEventType_e;
+};
 
-typedef enum
+enum alertEventLevel_e
 {
 	AEL_MINOR,			//Enemy responds to the sound, but only by looking
 	AEL_SUSPICIOUS,		//Enemy looks at the sound, and will also investigate it
 	AEL_DISCOVERED,		//Enemy knows the player is around, and will actively hunt
 	AEL_DANGER,			//Enemy should try to find cover
 	AEL_DANGER_GREAT,	//Enemy should run like hell!
-} alertEventLevel_e;
+};
 
 typedef struct alertEvent_s
 {
@@ -1155,10 +1155,8 @@ extern	vmCvar_t	g_debugUp;
 //extern	vmCvar_t	g_blueteam;
 extern	vmCvar_t	g_smoothClients;
 
-#include "../namespace_begin.h"
 extern	vmCvar_t	pmove_fixed;
 extern	vmCvar_t	pmove_msec;
-#include "../namespace_end.h"
 
 extern	vmCvar_t	g_enableBreath;
 extern	vmCvar_t	g_singlePlayer;

@@ -65,23 +65,23 @@
 
 //extern qboolean showWaypoints;
 
-typedef enum {VIS_UNKNOWN, VIS_NOT, VIS_PVS, VIS_360, VIS_FOV, VIS_SHOOT} visibility_t;
-typedef enum {SPOT_ORIGIN, SPOT_CHEST, SPOT_HEAD, SPOT_HEAD_LEAN, SPOT_WEAPON, SPOT_LEGS, SPOT_GROUND} spot_t;
+enum visibility_t {VIS_UNKNOWN, VIS_NOT, VIS_PVS, VIS_360, VIS_FOV, VIS_SHOOT};
+enum spot_t {SPOT_ORIGIN, SPOT_CHEST, SPOT_HEAD, SPOT_HEAD_LEAN, SPOT_WEAPON, SPOT_LEGS, SPOT_GROUND};
 
-typedef enum //# lookMode_e
+enum lookMode_t //# lookMode_e
 {
 	LM_ENT = 0,
 	LM_INTEREST
-} lookMode_t;
+};
 
-typedef enum //# jumpState_e
+enum jumpState_t //# jumpState_e
 {
 	JS_WAITING = 0,
 	JS_FACING,
 	JS_CROUCHING,
 	JS_JUMPING,
 	JS_LANDING
-} jumpState_t;
+};
 
 typedef struct gNPCstats_e
 {//Stats, loaded in, and can be set by scripts

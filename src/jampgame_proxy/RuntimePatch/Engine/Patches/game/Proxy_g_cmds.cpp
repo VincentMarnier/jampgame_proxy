@@ -1,5 +1,3 @@
-#pragma once
-
 #include <sdk/game/g_local.h>
 #include "jampgame_proxy/RuntimePatch/Engine/Proxy_Engine_Utils.hpp"
 #include "Proxy_g_cmds.hpp"

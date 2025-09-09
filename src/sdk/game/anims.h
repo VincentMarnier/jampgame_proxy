@@ -3,7 +3,7 @@
 // playerAnimations
 
 
-typedef enum //# animNumber_e
+enum animNumber_t//# animNumber_e
 {
 	//=================================================
 	//HEAD ANIMS
@@ -1788,7 +1788,7 @@ typedef enum //# animNumber_e
 	//# #eol
 	MAX_ANIMATIONS,
 	MAX_TOTALANIMATIONS,
-} animNumber_t;
+};
 
 #define SABER_ANIM_GROUP_SIZE (BOTH_A2_T__B_ - BOTH_A1_T__B_)
 

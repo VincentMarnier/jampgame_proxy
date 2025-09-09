@@ -17,7 +17,7 @@
 #define		MAX_EXDATA_ENTS_TO_SEND				MAX_CLIENTS //max number of extended data for ents to send
 
 // The basic siege player classes
-typedef enum
+enum siegePlayerClassFlags_t
 {
 	SPC_INFANTRY = 0,
 	SPC_VANGUARD,
@@ -26,9 +26,9 @@ typedef enum
 	SPC_DEMOLITIONIST,
 	SPC_HEAVY_WEAPONS,
 	SPC_MAX
-} siegePlayerClassFlags_t;
+};
 
-typedef enum
+enum siegeClassFlags_t
 {
 	CFL_MORESABERDMG = 0,
 	CFL_STRONGAGAINSTPHYSICAL,
@@ -38,14 +38,10 @@ typedef enum
 	CFL_SINGLE_ROCKET,//has only 1 rocket to use with rocketlauncher
 	CFL_CUSTOMSKEL, //class uses a custom skeleton, be sure to load on server etc
 	CFL_EXTRA_AMMO
-} siegeClassFlags_t;
+};
 
 
-#ifdef _XBOX
-#define SIEGE_CLASS_DESC_LEN  512
-#else
 #define SIEGE_CLASS_DESC_LEN  4096
-#endif
 typedef struct
 {
 	char		desc[SIEGE_CLASS_DESC_LEN];
@@ -87,8 +83,6 @@ typedef struct
 	int			friendlyShader;
 } siegeTeam_t;
 
-#include "../namespace_begin.h"
-
 extern siegeClass_t bgSiegeClasses[MAX_SIEGE_CLASSES];
 extern int bgNumSiegeClasses;
 
@@ -111,5 +105,3 @@ int BG_SiegeFindClassIndexByName(const char *classname);
 
 extern char	siege_info[MAX_SIEGE_INFO_SIZE];
 extern int	siege_valid;
-
-#include "../namespace_end.h"

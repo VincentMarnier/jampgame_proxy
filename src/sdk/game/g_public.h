@@ -99,7 +99,7 @@ typedef struct {
 //
 // system traps provided by the main engine
 //
-typedef enum {
+enum gameImport_t {
 	//============== general Quake services ==================
 
 	G_PRINT,		// ( const char *string );
@@ -578,10 +578,10 @@ Ghoul2 Insert Start
 Ghoul2 Insert End
 */
 
-} gameImport_t;
+};
 
 //bstate.h
-typedef enum //# bState_e
+enum bState_t//# bState_e
 {//These take over only if script allows them to be autonomous
 	BS_DEFAULT = 0,//# default behavior for that NPC
 	BS_ADVANCE_FIGHT,//# Advance to captureGoal and shoot enemies if you can
@@ -603,7 +603,7 @@ typedef enum //# bState_e
 	BS_HUNT_AND_KILL,
 	BS_FLEE,//# Run away!
 	NUM_BSTATES
-} bState_t;
+};
 
 enum
 {
@@ -622,7 +622,7 @@ enum
 	NODE_NAVGOAL,
 };
 
-typedef enum //# taskID_e
+enum taskID_t//# taskID_e
 {
 	TID_CHAN_VOICE = 0,	// Waiting for a voice sound to complete
 	TID_ANIM_UPPER,		// Waiting to finish a lower anim holdtime
@@ -636,9 +636,9 @@ typedef enum //# taskID_e
 	TID_RESIZE,			// Waiting for clear bbox to inflate size
 	TID_SHOOT,			// Waiting for fire event
 	NUM_TIDS,			// for def of taskID array
-} taskID_t;
+};
 
-typedef enum //# bSet_e
+enum bSet_t//# bSet_e
 {//This should check to matching a behavior state name first, then look for a script
 	BSET_INVALID = -1,
 	BSET_FIRST = 0,
@@ -661,7 +661,7 @@ typedef enum //# bSet_e
 	BSET_MINDTRICK,//# script to run when player does a mind trick on this NPC
 
 	NUM_BSETS
-} bSet_t;
+};
 
 #define	MAX_PARMS	16
 #define	MAX_PARM_STRING_LENGTH	MAX_QPATH//was 16, had to lengthen it so they could take a valid file path
@@ -717,7 +717,7 @@ typedef struct {
 //
 // functions exported by the game subsystem
 //
-typedef enum {
+enum gameExport_t {
 	GAME_INIT,	// ( int levelTime, int randomSeed, int restart );
 	// init and shutdown will be called every single level
 	// The game should call G_GET_ENTITY_TOKEN to parse through all the
@@ -782,7 +782,7 @@ typedef enum {
 	GAME_NAV_FINDCOMBATPOINTWAYPOINTS,
 	
 	GAME_GETITEMINDEXBYTAG
-} gameExport_t;
+};
 
 typedef struct
 {

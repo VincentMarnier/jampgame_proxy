@@ -117,16 +117,16 @@ void Proxy_Engine_Initialize_MemoryLayer(void)
 	server.common.functions.Z_Malloc = (decltype(server.common.functions.Z_Malloc))func_Z_Malloc_addr;
 
 	// jampgame
-	jampgame.functions.Com_Error = (decltype(jampgame.functions.Com_Error))proxy.jampgameAddress + jampgame_func_Com_Error_addr;
-	jampgame.functions.Com_sprintf = (decltype(jampgame.functions.Com_sprintf))proxy.jampgameAddress + jampgame_func_Com_sprintf_addr;
-	jampgame.functions.Info_SetValueForKey = (decltype(jampgame.functions.Info_SetValueForKey))proxy.jampgameAddress + jampgame_func_Info_SetValueForKey_addr;
-	jampgame.functions.Info_ValueForKey = (decltype(jampgame.functions.Info_ValueForKey))proxy.jampgameAddress + jampgame_func_Info_ValueForKey_addr;
-	jampgame.functions.Q_strcat = (decltype(jampgame.functions.Q_strcat))proxy.jampgameAddress + jampgame_func_Q_strcat_addr;
-	jampgame.functions.Q_stricmp = (decltype(jampgame.functions.Q_stricmp))proxy.jampgameAddress + jampgame_func_Q_stricmp_addr;
-	jampgame.functions.Q_stricmpn = (decltype(jampgame.functions.Q_stricmpn))proxy.jampgameAddress + jampgame_func_Q_stricmpn_addr;
-	jampgame.functions.Q_strncmp = (decltype(jampgame.functions.Q_strncmp))proxy.jampgameAddress + jampgame_func_Q_strncmp_addr;
-	jampgame.functions.Q_strncpyz = (decltype(jampgame.functions.Q_strncpyz))proxy.jampgameAddress + jampgame_func_Q_strncpyz_addr;
-	jampgame.functions.va = (decltype(jampgame.functions.va))proxy.jampgameAddress + jampgame_func_va_addr;
+	jampgame.functions.Com_Error = (decltype(jampgame.functions.Com_Error))(proxy.jampgameAddress + jampgame_func_Com_Error_addr);
+	jampgame.functions.Com_sprintf = (decltype(jampgame.functions.Com_sprintf))(proxy.jampgameAddress + jampgame_func_Com_sprintf_addr);
+	jampgame.functions.Info_SetValueForKey = (decltype(jampgame.functions.Info_SetValueForKey))(proxy.jampgameAddress + jampgame_func_Info_SetValueForKey_addr);
+	jampgame.functions.Info_ValueForKey = (decltype(jampgame.functions.Info_ValueForKey))(proxy.jampgameAddress + jampgame_func_Info_ValueForKey_addr);
+	jampgame.functions.Q_strcat = (decltype(jampgame.functions.Q_strcat))(proxy.jampgameAddress + jampgame_func_Q_strcat_addr);
+	jampgame.functions.Q_stricmp = (decltype(jampgame.functions.Q_stricmp))(proxy.jampgameAddress + jampgame_func_Q_stricmp_addr);
+	jampgame.functions.Q_stricmpn = (decltype(jampgame.functions.Q_stricmpn))(proxy.jampgameAddress + jampgame_func_Q_stricmpn_addr);
+	jampgame.functions.Q_strncmp = (decltype(jampgame.functions.Q_strncmp))(proxy.jampgameAddress + jampgame_func_Q_strncmp_addr);
+	jampgame.functions.Q_strncpyz = (decltype(jampgame.functions.Q_strncpyz))(proxy.jampgameAddress + jampgame_func_Q_strncpyz_addr);
+	jampgame.functions.va = (decltype(jampgame.functions.va))(proxy.jampgameAddress + jampgame_func_va_addr);
 	
 	printf("----- Proxy: Memory layer properly initialized\n");
 }

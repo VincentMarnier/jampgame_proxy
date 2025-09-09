@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Proxy_Utils.hpp"
 
 qboolean Q_IsValidAsciiStr(const char* string) {
