@@ -1,12 +1,12 @@
 #include "jampgame_proxy/Proxy_Header.hpp"
-#include "sdk/game/g_public.hpp"
+#include <sdk/game/g_public.h>
 #include "Proxy_OriginalAPI_Wrappers.hpp"
 #include "jampgame_proxy/Proxy_SharedAPI.hpp"
 #include "jampgame_proxy/Proxy_Main.hpp"
 
 #include <cstdarg>
 
-intptr_t QDECL Proxy_OriginalAPI_VM_DllSyscall(intptr_t command, ...)
+int QDECL Proxy_OriginalAPI_VM_DllSyscall(int command, ...)
 {
 	intptr_t args[16];
 	
@@ -14,7 +14,7 @@ intptr_t QDECL Proxy_OriginalAPI_VM_DllSyscall(intptr_t command, ...)
 
 	va_start(ap, command);
 
-	for (std::size_t i = 0; i < sizeof(args) / sizeof(args[i]); ++i)
+	for (size_t i = 0; i < sizeof(args) / sizeof(args[i]); ++i)
 	{
 		args[i] = va_arg(ap, intptr_t);
 	}
@@ -58,7 +58,7 @@ intptr_t QDECL Proxy_OriginalAPI_VM_Call(intptr_t command, ...)
 
 	va_start(ap, command);
 
-	for (std::size_t i = 0; i < sizeof(args) / sizeof(args[i]); ++i)
+	for (size_t i = 0; i < sizeof(args) / sizeof(args[i]); ++i)
 	{
 		args[i] = va_arg(ap, intptr_t);
 	}

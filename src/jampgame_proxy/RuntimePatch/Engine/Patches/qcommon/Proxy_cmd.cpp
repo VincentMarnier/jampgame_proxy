@@ -31,7 +31,7 @@ static void Cmd_TokenizeString2(const char* text_in, qboolean ignoreQuotes) {
 		return;
 	}
 
-	Q_strncpyz(cmd_cmd, text_in, sizeof(cmd_cmd));
+	jampgame.functions.Q_strncpyz(cmd_cmd, text_in, sizeof(cmd_cmd));
 
 	text = text_in;
 	textOut = *server.common.vars.cmd_tokenized;
@@ -148,9 +148,9 @@ char* Proxy_Cmd_ArgsFrom(int arg) {
 	if (arg < 0)
 		arg = 0;
 	for (i = arg; i < *server.common.vars.cmd_argc; i++) {
-		Q_strcat(cmd_args, sizeof(cmd_args), (*server.common.vars.cmd_argv)[i]);
+		jampgame.functions.Q_strcat(cmd_args, sizeof(cmd_args), (*server.common.vars.cmd_argv)[i]);
 		if (i != (*server.common.vars.cmd_argc) - 1) {
-			Q_strcat(cmd_args, sizeof(cmd_args), " ");
+			jampgame.functions.Q_strcat(cmd_args, sizeof(cmd_args), " ");
 		}
 	}
 

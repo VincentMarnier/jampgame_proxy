@@ -8,17 +8,12 @@
 // Windows and Linux operating systems.
 // ==================================================
 
-#ifndef WIN32
-	#include <sys/mman.h>
-	#include <unistd.h>
-#else
-	#include <windows.h>
-#endif
-
-#include		<cstdlib>
-#include		<cstdio>
-#include		"HookUtils.hpp"
-#include		"LengthDisassembler/hde.hpp"
+#include <sys/mman.h>
+#include <unistd.h>
+#include <cstdlib>
+#include <cstdio>
+#include <Zydis/Zydis.h>
+#include "HookUtils.hpp"
 
 namespace HookUtils {
 	// ==================================================
@@ -27,9 +22,8 @@ namespace HookUtils {
 	// Use OS specific way of allocating memory when available
 	// ==================================================
 
-	unsigned char* AllocateMemory(const std::size_t iLen)
+	unsigned char* AllocateMemory(const size_t iLen)
 	{
-#ifndef WIN32
 		//return (unsigned char*)malloc(iLen + 5);
 		unsigned char* allocAddr = (unsigned char*)mmap(nullptr, iLen + 5, PROT_EXEC | PROT_READ | PROT_WRITE, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 
@@ -40,9 +34,6 @@ namespace HookUtils {
 		}
 
 		return allocAddr;
-#else
-		return (unsigned char*)VirtualAlloc(0, iLen + 5, MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);
-#endif
 	}
 
 	// ==================================================
@@ -51,16 +42,9 @@ namespace HookUtils {
 	// Use OS specific way of releasing memory when available
 	// ==================================================
 
-	bool ReleaseMemory(unsigned char* address, std::size_t iLen)
+	bool ReleaseMemory(unsigned char* address, size_t iLen)
 	{
-#ifndef WIN32
-		//std::free(address);
 		return munmap(address, iLen + 5) == 0;
-#else
-		// avoid C4100 on MSVC
-		iLen = 0;
-		return VirtualFree((LPVOID)address, 0, MEM_RELEASE) != 0;
-#endif
 	}
 
 	// ==================================================
@@ -71,18 +55,21 @@ namespace HookUtils {
 	// function to count the opcodes.
 	// ==================================================
 
-	std::size_t GetLen(unsigned char* pAddress)
+	size_t GetLen(unsigned char* pAddress)
 	{
-		std::size_t iLen = 0;
-		std::size_t iSize = 0;
-		HDE dummy;
+		size_t iSize = 0;
+		ZydisDecoder decoder;
+		ZydisDecoderInit(&decoder, ZYDIS_MACHINE_MODE_LEGACY_32, ZYDIS_STACK_WIDTH_32);
+		
+		ZydisDecodedInstruction instruction;
+    ZydisDecodedOperand operands[ZYDIS_MAX_OPERAND_COUNT];
 
-		while (iSize < 5)
-		{
-			iLen = HDE_DISASM(pAddress, &dummy);
-			pAddress += iLen;
-			iSize += iLen;
-		}
+    while (iSize < 5 && ZYAN_SUCCESS(ZydisDecoderDecodeFull(&decoder, pAddress, 16,
+        &instruction, operands)))
+    {
+			pAddress += instruction.length;
+			iSize += instruction.length;
+    }
 
 		return iSize;
 	}
@@ -115,7 +102,7 @@ namespace HookUtils {
 		uintptr_t pReturnAddress = InlineFetch(pAddress);
 
 		UnProtect(pAddress, 5);
-		*(uintptr_t*)(pAddress + 1) = (std::ptrdiff_t)((uintptr_t)pNewAddress - (uintptr_t)(pAddress + 5));
+		*(uintptr_t*)(pAddress + 1) = (ptrdiff_t)((uintptr_t)pNewAddress - (uintptr_t)(pAddress + 5));
 		ReProtect(pAddress, 5);
 
 		return pReturnAddress;
@@ -144,10 +131,10 @@ namespace HookUtils {
 	// given address.
 	// ==================================================
 
-	void Patch_NOP_Bytes(unsigned char* pAddress, std::size_t iLen)
+	void Patch_NOP_Bytes(unsigned char* pAddress, size_t iLen)
 	{
 		UnProtect(pAddress, iLen);
-		std::memset(pAddress, 0x90, iLen);
+		memset(pAddress, 0x90, iLen);
 		ReProtect(pAddress, iLen);
 	}
 
@@ -158,9 +145,8 @@ namespace HookUtils {
 	// be called after any UnProtect call!
 	// ==================================================
 
-	void ReProtect(void* pAddress, std::size_t iLen)
+	void ReProtect(void* pAddress, size_t iLen)
 	{
-#ifndef WIN32
 		uintptr_t iPage1 = (uintptr_t)pAddress & ~(getpagesize() - 1);
 		uintptr_t iPage2 = ((uintptr_t)pAddress + iLen) & ~(getpagesize() - 1);
 
@@ -173,10 +159,6 @@ namespace HookUtils {
 			mprotect((unsigned char*)iPage1, getpagesize(), PROT_READ | PROT_EXEC);
 			mprotect((unsigned char*)iPage2, getpagesize(), PROT_READ | PROT_EXEC);
 		}
-#else
-		DWORD dummy;
-		VirtualProtect(pAddress, iLen, PAGE_EXECUTE_READ, &dummy);
-#endif
 	}
 
 	// ==================================================
@@ -188,10 +170,8 @@ namespace HookUtils {
 	// the entire length is on the same page.
 	// ==================================================
 
-	void UnProtect(void* pAddress, std::size_t iLen)
+	void UnProtect(void* pAddress, size_t iLen)
 	{
-#ifndef WIN32
-
 		uintptr_t iPage1 = (uintptr_t)pAddress & ~(getpagesize() - 1);
 		uintptr_t iPage2 = ((uintptr_t)pAddress + iLen) & ~(getpagesize() - 1);
 
@@ -204,10 +184,5 @@ namespace HookUtils {
 			mprotect((unsigned char*)iPage1, getpagesize(), PROT_READ | PROT_WRITE | PROT_EXEC);
 			mprotect((unsigned char*)iPage2, getpagesize(), PROT_READ | PROT_WRITE | PROT_EXEC);
 		}
-
-#else
-		DWORD dummy;
-		VirtualProtect(pAddress, iLen, PAGE_EXECUTE_READWRITE, &dummy);
-#endif
 	}
 }

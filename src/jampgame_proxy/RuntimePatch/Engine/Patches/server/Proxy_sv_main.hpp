@@ -1,7 +1,6 @@
 #pragma once
 
-#include "sdk/sys/sys_public.hpp"
-#include "sdk/qcommon/qcommon.hpp"
+#include <sdk/qcommon/qcommon.h>
 
 extern void (*Original_SV_CalcPings)(void);
 void Proxy_SV_CalcPings(void);

@@ -1,8 +1,7 @@
 #pragma once
 
-#include "sdk/server/server.hpp"
-#include "sdk/qcommon/qcommon.hpp"
-#include "sdk/qcommon/q_shared.hpp"
+#include <sdk/server/server.h>
+#include <sdk/qcommon/qcommon.h>
 
 extern void (*Original_SV_ExecuteClientMessage)(client_t*, msg_t*);
 void Proxy_SV_ExecuteClientMessage(client_t* cl, msg_t* msg);

@@ -21,7 +21,7 @@ static int Proxy_SV_RateMsec(client_t* client, int messageSize) {
 	rate = client->rate;
 	if (server.cvars.sv_maxRate->integer) {
 		if (server.cvars.sv_maxRate->integer < 1000) {
-			proxy.trap->Cvar_Set("sv_MaxRate", "1000");
+			trap_Cvar_Set("sv_MaxRate", "1000");
 		}
 		if (server.cvars.sv_maxRate->integer < rate) {
 			rate = server.cvars.sv_maxRate->integer;
@@ -59,7 +59,7 @@ void Proxy_SV_SendMessageToClient(msg_t* msg, client_t* client)
 	client->frames[client->netchan.outgoingSequence & PACKET_MASK].messageSize = msg->cursize;
 	// Proxy -------------->
 	// client->frames[client->netchan.outgoingSequence & PACKET_MASK].messageSent = svs.time;
-	client->frames[client->netchan.outgoingSequence & PACKET_MASK].messageSent = (proxy.originalEngineCvars.proxy_sv_pingFix.integer ? proxy.trap->Milliseconds() : server.svs->time);
+	client->frames[client->netchan.outgoingSequence & PACKET_MASK].messageSent = (proxy.originalEngineCvars.proxy_sv_pingFix.integer ? trap_Milliseconds() : server.svs->time);
 	// Proxy <--------------
 	client->frames[client->netchan.outgoingSequence & PACKET_MASK].messageAcked = -1;
 

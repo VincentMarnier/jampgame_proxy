@@ -2,12 +2,12 @@
 #include "Proxy_Engine_Client.hpp"
 #include "Proxy_Engine_Utils.hpp"
 
-void Proxy_Engine_Client_UpdateUcmdStats(std::size_t clientNum, usercmd_t* cmd, std::size_t packetIndex)
+void Proxy_Engine_Client_UpdateUcmdStats(size_t clientNum, usercmd_t* cmd, size_t packetIndex)
 {
 	ClientData_t* currentClientData = &proxy.clientData[clientNum];
 
 	currentClientData->cmdIndex++;
-	const std::size_t cmdIndex = currentClientData->cmdIndex & (CMD_MASK - 1);
+	const size_t cmdIndex = currentClientData->cmdIndex & (CMD_MASK - 1);
 	currentClientData->cmdStats[cmdIndex].serverTime = cmd->serverTime;
 	currentClientData->cmdStats[cmdIndex].packetIndex = packetIndex;
 }
@@ -17,7 +17,7 @@ void Proxy_Engine_Client_UpdateUcmdStats(std::size_t clientNum, usercmd_t* cmd, 
 void Proxy_Engine_Client_CalcPacketsAndFPS(int clientNum, int* packets, int* fps)
 {
 	int			lastCmdTime;
-	std::size_t	lastPacketIndex = 0;
+	size_t	lastPacketIndex = 0;
 	int			i;
 
 	ClientData_t *currentClientData = &proxy.clientData[clientNum];

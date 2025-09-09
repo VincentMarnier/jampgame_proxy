@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sdk/game/g_public.hpp"
+#include <sdk/game/g_public.h>
 
 // ==================================================
 // IMPORT TABLE

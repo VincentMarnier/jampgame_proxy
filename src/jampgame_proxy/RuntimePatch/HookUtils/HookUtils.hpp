@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <cstring>
 #include <cstdint>
+#include <cstdio>
 
 // ==================================================
 // DetourPatcher by Deathspike, updated by Yberion
@@ -25,7 +26,7 @@ namespace HookUtils {
 		FunctionType**	originalRedirectedFunctionPtr;
 		// exemple: Proxy_Com_Printf
 		FunctionType*	proxyFunctionPtr;
-		std::size_t		savedOpcodeLength;
+		size_t		savedOpcodeLength;
 		// if we can not allocate, then it is useless to release the memory, in this case, no hook done
 		bool			isMemoryAllocated;
 
@@ -34,7 +35,7 @@ namespace HookUtils {
 			unsigned char* originalFunctionAddr,
 			FunctionType** originalRedirectedFunctionPtr,
 			FunctionType* proxyFunctionPtr,
-			std::size_t savedOpcodeLength
+			size_t savedOpcodeLength
 		) :
 			hookName(hookName),
 			originalFunctionAddr(originalFunctionAddr),
@@ -45,15 +46,15 @@ namespace HookUtils {
 		{}
 	};
 
-	unsigned char*	AllocateMemory(const std::size_t iLen);
-	bool			ReleaseMemory(unsigned char* address, std::size_t iLen);
-	std::size_t		GetLen(unsigned char* pAddress);
+	unsigned char*	AllocateMemory(const size_t iLen);
+	bool			ReleaseMemory(unsigned char* address, size_t iLen);
+	size_t		GetLen(unsigned char* pAddress);
 	uintptr_t		InlineFetch(unsigned char* pAddress);
 	uintptr_t		InlinePatch(unsigned char* pAddress, unsigned char* pNewAddress);
 	void			Patch(unsigned char* pAddress, unsigned char bByte);
-	void			Patch_NOP_Bytes(unsigned char* pAddress, std::size_t iLen);
-	void			ReProtect(void* pAddress, std::size_t iLen);
-	void			UnProtect(void* pAddress, std::size_t iLen);
+	void			Patch_NOP_Bytes(unsigned char* pAddress, size_t iLen);
+	void			ReProtect(void* pAddress, size_t iLen);
+	void			UnProtect(void* pAddress, size_t iLen);
 
 	// ==================================================
 	// GetTramp
@@ -76,9 +77,9 @@ namespace HookUtils {
 
 		hookEntry.isMemoryAllocated = true;
 
-		std::memcpy(pTramp, hookEntry.originalFunctionAddr, hookEntry.savedOpcodeLength);
+		memcpy(pTramp, hookEntry.originalFunctionAddr, hookEntry.savedOpcodeLength);
 		*(unsigned char*)(pTramp + hookEntry.savedOpcodeLength) = 0xE9;
-		*(uintptr_t*)(pTramp + hookEntry.savedOpcodeLength + 1) = (std::ptrdiff_t)((uintptr_t)(hookEntry.originalFunctionAddr + hookEntry.savedOpcodeLength) - (uintptr_t)(pTramp + hookEntry.savedOpcodeLength + 5));
+		*(uintptr_t*)(pTramp + hookEntry.savedOpcodeLength + 1) = (ptrdiff_t)((uintptr_t)(hookEntry.originalFunctionAddr + hookEntry.savedOpcodeLength) - (uintptr_t)(pTramp + hookEntry.savedOpcodeLength + 5));
 
 		return (FunctionType*)pTramp;
 	}
@@ -105,10 +106,11 @@ namespace HookUtils {
 		}
 
 		UnProtect(hookEntry.originalFunctionAddr, hookEntry.savedOpcodeLength);
-		std::memset(hookEntry.originalFunctionAddr, 0x90, hookEntry.savedOpcodeLength);
+		memset(hookEntry.originalFunctionAddr, 0x90, hookEntry.savedOpcodeLength);
 
 		*((unsigned char*)((uintptr_t)hookEntry.originalFunctionAddr)) = 0xE9;
 		*((uintptr_t*)((uintptr_t)hookEntry.originalFunctionAddr + 1)) = (uintptr_t)hookEntry.proxyFunctionPtr - (uintptr_t)((uintptr_t)hookEntry.originalFunctionAddr + 5);
+
 		ReProtect(hookEntry.originalFunctionAddr, hookEntry.savedOpcodeLength);
 
 		return true;
@@ -130,7 +132,7 @@ namespace HookUtils {
 		}
 
 		UnProtect(hookEntry.originalFunctionAddr, hookEntry.savedOpcodeLength);
-		std::memcpy((unsigned char*)hookEntry.originalFunctionAddr, (unsigned char*)*hookEntry.originalRedirectedFunctionPtr, hookEntry.savedOpcodeLength);
+		memcpy((unsigned char*)hookEntry.originalFunctionAddr, (unsigned char*)*hookEntry.originalRedirectedFunctionPtr, hookEntry.savedOpcodeLength);
 		ReProtect(hookEntry.originalFunctionAddr, hookEntry.savedOpcodeLength);
 
 		return ReleaseMemory((unsigned char*) *hookEntry.originalRedirectedFunctionPtr, hookEntry.savedOpcodeLength);

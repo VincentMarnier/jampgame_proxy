@@ -6,55 +6,14 @@
 
 #pragma once
 
-// ==================================================
-// PLATFORM SPECIFIC STUFF
-// ==================================================
-
-// /!\ Should start at 0 because it will be used as index to array
-enum Proxy_Platform_e
-{
-	PROXY_WINDOWS = 0,
-	PROXY_LINUX,
-
-	PROXY_PLATFORM_LENGTH
-};
-
-#ifdef _MSC_VER
-	#include <windows.h>
-
-	#define PROXY_LIBRARY_EXT "dll"
-
-	#define JampgameProxy_OpenLibrary(a) (void *)LoadLibrary(a)
-	#define JampgameProxy_CloseLibrary(a) FreeLibrary((HMODULE)a)
-	#define JampgameProxy_GetFunctionAddress(a, b) GetProcAddress((HMODULE)a, b)
-
-	#define ORIGINAL_ENGINE_VERSION "(internal)JAmp: v1.0.1.0 win-x86 Oct 30 2003"
-
-	constexpr Proxy_Platform_e PROXY_PLATFORM = Proxy_Platform_e::PROXY_WINDOWS;
-#else
-	#include <dlfcn.h>
-
-	#define PROXY_LIBRARY_EXT "so"
-
-	#define JampgameProxy_OpenLibrary(a) dlopen(a, RTLD_NOW)
-	#define JampgameProxy_CloseLibrary(a) dlclose(a)
-	#define JampgameProxy_GetFunctionAddress(a, b) dlsym(a, b)
-
-	#define ORIGINAL_ENGINE_VERSION "JAmp: v1.0.1.1 linux-i386 Nov 10 2003"
-
-	constexpr Proxy_Platform_e PROXY_PLATFORM = Proxy_Platform_e::PROXY_LINUX;
-#endif
-
-// ==================================================
-// INCLUDE
-// ==================================================
-
-#include "sdk/game/g_local.hpp"
-#include "sdk/game/g_public.hpp"
-#include "sdk/qcommon/q_shared.hpp"
+#include <sdk/game/b_local.h>
+#include <sdk/game/b_public.h>
+#include <sdk/qcommon/qcommon.h>
 
 #include <cstdint>
 #include <cstddef>
+
+#include "Proxy_Translate_SystemCalls.hpp"
 
 // ==================================================
 // DEFINE
@@ -65,10 +24,11 @@ enum Proxy_Platform_e
 #define DEFAULT_BASE_GAME_FOLDER_NAME "base"
 
 #define PROXY_LIBRARY_SLASH "/"
-#define PROXY_LIBRARY_NAME "jampgame_original"
-#define PROXY_LIBRARY_DOT "."
+#define PROXY_LIBRARY_NAME "jampgame_original.so"
 
-#define PROXY_LIBRARY PROXY_LIBRARY_SLASH PROXY_LIBRARY_NAME PROXY_LIBRARY_DOT PROXY_LIBRARY_EXT
+#define PROXY_LIBRARY PROXY_LIBRARY_SLASH PROXY_LIBRARY_NAME
+
+#define ORIGINAL_ENGINE_VERSION "JAmp: v1.0.1.1 linux-i386 Nov 10 2003"
 
 #define JAMPGAMEPROXY_NAME "jampgame_proxy"
 #define JAMPGAMEPROXY_VERSION "0.0.1"
@@ -77,8 +37,8 @@ enum Proxy_Platform_e
 // TYPEDEF
 // ==================================================
 
-using systemCallFuncPtr_t =	intptr_t (QDECL *)(intptr_t command, ...);
-using vmMainFuncPtr_t = 	intptr_t (*)(intptr_t command, intptr_t, intptr_t, intptr_t, intptr_t, intptr_t, intptr_t, intptr_t, intptr_t, intptr_t, intptr_t, intptr_t);
+using systemCallFuncPtr_t =	int (QDECL *)(int command, ...);
+using vmMainFuncPtr_t = 	int (*)(int command, int, int, int, int, int, int, int, int, int, int, int);
 using dllEntryFuncPtr_t = 	void (*)(systemCallFuncPtr_t);
 
 // ==================================================
@@ -96,7 +56,7 @@ struct timenudgeData_t
 struct ucmdStat_t
 {
 	int				serverTime;
-	std::size_t		packetIndex;
+	size_t		packetIndex;
 };
 
 #define CMD_MASK 1024
@@ -116,6 +76,14 @@ struct LocatedGameData_t
 	int					g_clientSize;
 };
 
+struct GameStats_t
+{
+	int killed;
+	int killedBy;
+	int damagesGiven;
+	int damagesTaken;
+};
+
 struct ClientData_t
 {
 	bool				isConnected;
@@ -128,7 +96,9 @@ struct ClientData_t
 	int					lastTimeMyratioCheck;
 
 	ucmdStat_t			cmdStats[CMD_MASK];
-	std::size_t			cmdIndex;
+	size_t			cmdIndex;
+
+	GameStats_t gameStats[MAX_CLIENTS];
 };
 
 struct Proxy_OriginalEngine_CVars_t
@@ -154,29 +124,23 @@ struct Proxy_CVars_t
 struct Proxy_t
 {
 	void					*jampgameHandle;
+	uint 		jampgameAddress;
 
 	vmMainFuncPtr_t			originalVmMain;
 	dllEntryFuncPtr_t		originalDllEntry;
 	systemCallFuncPtr_t		originalSystemCall;
 
-	intptr_t				originalVmMainResponse;
-
-	gameImport_t*			trap;
-
-	gameImport_t*			originalOpenJKAPIGameImportTable;
-	gameExport_t*			originalOpenJKAPIGameExportTable;
-
-	gameImport_t*			copyOpenJKAPIGameImportTable;
-	gameExport_t*			copyOpenJKAPIGameExportTable;
-
-	bool					isOriginalEngine;
+	int				originalVmMainResponse;
 
 	ProxyData_t				proxyData;
-	LocatedGameData_t		locatedGameData;
+	LocatedGameData_t	locatedGameData;
 	ClientData_t			clientData[MAX_CLIENTS];
 	
 	Proxy_OriginalEngine_CVars_t originalEngineCvars;
-	Proxy_CVars_t			 cvars;
+	Proxy_CVars_t			cvars;
+
+	level_locals_t 		*level;
+	gentity_t					*g_entities;
 };
 
 // ==================================================

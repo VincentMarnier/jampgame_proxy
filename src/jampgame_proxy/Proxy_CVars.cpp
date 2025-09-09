@@ -1,5 +1,7 @@
 #include "Proxy_Header.hpp"
 #include "Proxy_CVars.hpp"
+#include "Proxy_Translate_SystemCalls.hpp"
+#include "RuntimePatch/Engine/Proxy_Engine_Wrappers.hpp"
 
 static cvarTable_t proxyOriginalEngineCVarTable[] =
 {
@@ -7,7 +9,7 @@ static cvarTable_t proxyOriginalEngineCVarTable[] =
 	{ &proxy.originalEngineCvars.proxy_sv_enableRconCmdCooldown, "proxy_sv_enableRconCmdCooldown", "0", CVAR_ARCHIVE, 0, qfalse },
 	{ &proxy.originalEngineCvars.proxy_sv_enableNetStatus, "proxy_sv_enableNetStatus", "0", CVAR_ARCHIVE, 0, qfalse },
 };
-static constexpr std::size_t proxyOriginalEngineCVarTableSize = ARRAY_LEN(proxyOriginalEngineCVarTable);
+static constexpr size_t proxyOriginalEngineCVarTableSize = 3;
 
 static cvarTable_t proxyCVarTable[] =
 {
@@ -20,7 +22,7 @@ static cvarTable_t proxyCVarTable[] =
 	{ &proxy.cvars.sv_fps, "sv_fps", "20", CVAR_SERVERINFO, 0, qfalse },
 	{ &proxy.cvars.sv_gametype, "sv_gametype", "0", CVAR_SERVERINFO, 0, qfalse }
 };
-static constexpr std::size_t proxyCVarTableSize = ARRAY_LEN(proxyCVarTable);
+static constexpr size_t proxyCVarTableSize = 5;
 
 // ==================================================
 // Proxy_OriginalEngine_CVars_Registration
@@ -30,14 +32,14 @@ static constexpr std::size_t proxyCVarTableSize = ARRAY_LEN(proxyCVarTable);
 
 void Proxy_OriginalEngine_CVars_Registration(void)
 {
-	proxy.trap->Print("----- Proxy: Initializing original engine Proxy CVars\n");
+	printf("----- Proxy: Initializing original engine Proxy CVars\n");
 
 	unsigned int i = 0;
 	cvarTable_t* currentCVarTableItem = nullptr;
 
 	for (i = 0, currentCVarTableItem = proxyOriginalEngineCVarTable; i < proxyOriginalEngineCVarTableSize; ++i, ++currentCVarTableItem)
 	{
-		proxy.trap->Cvar_Register(currentCVarTableItem->vmCvar, currentCVarTableItem->cvarName, currentCVarTableItem->defaultString, currentCVarTableItem->cvarFlags);
+		trap_Cvar_Register(currentCVarTableItem->vmCvar, currentCVarTableItem->cvarName, currentCVarTableItem->defaultString, currentCVarTableItem->cvarFlags);
 
 		if (currentCVarTableItem->vmCvar)
 		{
@@ -45,7 +47,7 @@ void Proxy_OriginalEngine_CVars_Registration(void)
 		}
 	}
 
-	proxy.trap->Print("----- Proxy: Original engine Proxy CVars properly initialized\n");
+	printf("----- Proxy: Original engine Proxy CVars properly initialized\n");
 }
 
 // ==================================================
@@ -61,7 +63,7 @@ void Proxy_CVars_Registration(void)
 
 	for (i = 0, currentCVarTableItem = proxyCVarTable; i < proxyCVarTableSize; ++i, ++currentCVarTableItem)
 	{
-		proxy.trap->Cvar_Register(currentCVarTableItem->vmCvar, currentCVarTableItem->cvarName, currentCVarTableItem->defaultString, currentCVarTableItem->cvarFlags);
+		trap_Cvar_Register(currentCVarTableItem->vmCvar, currentCVarTableItem->cvarName, currentCVarTableItem->defaultString, currentCVarTableItem->cvarFlags);
 
 		if (currentCVarTableItem->vmCvar)
 		{
@@ -86,7 +88,7 @@ static void Proxy_OriginalEngine_UpdateCvars(void)
 		if (currentCVarTable->vmCvar)
 		{
 			int vmCvarModificationCount = currentCVarTable->vmCvar->modificationCount;
-			proxy.trap->Cvar_Update(currentCVarTable->vmCvar);
+			trap_Cvar_Update(currentCVarTable->vmCvar);
 
 			if (currentCVarTable->modificationCount != vmCvarModificationCount)
 			{
@@ -94,7 +96,7 @@ static void Proxy_OriginalEngine_UpdateCvars(void)
 
 				if (currentCVarTable->trackChange)
 				{
-					proxy.trap->SendServerCommand(-1, va("print \"Server: %s changed to %s\n\"",
+					trap_SendServerCommand(-1, jampgame.functions.va("print \"Server: %s changed to %s\n\"",
 						currentCVarTable->cvarName, currentCVarTable->vmCvar->string));
 				}
 			}
@@ -118,7 +120,7 @@ static void Proxy_UpdateCvars(void)
 		if (currentCVarTable->vmCvar)
 		{
 			int vmCvarModificationCount = currentCVarTable->vmCvar->modificationCount;
-			proxy.trap->Cvar_Update(currentCVarTable->vmCvar);
+			trap_Cvar_Update(currentCVarTable->vmCvar);
 
 			if (currentCVarTable->modificationCount != vmCvarModificationCount)
 			{
@@ -126,7 +128,7 @@ static void Proxy_UpdateCvars(void)
 
 				if (currentCVarTable->trackChange)
 				{
-					proxy.trap->SendServerCommand(-1, va("print \"Server: %s changed to %s\n\"",
+					trap_SendServerCommand(-1, jampgame.functions.va("print \"Server: %s changed to %s\n\"",
 						currentCVarTable->cvarName, currentCVarTable->vmCvar->string));
 				}
 			}
@@ -139,7 +141,7 @@ static void Proxy_UpdateCvars(void)
 // --------------------------------------------------
 // Updates all the variables once per second~.
 // ==================================================
-
+// TODO: Seems like something we don't want to do every sec ...
 void Proxy_UpdateAllCvars(void)
 {
 	// TODO: won't be once per second on sv_fps change
@@ -148,11 +150,7 @@ void Proxy_UpdateAllCvars(void)
 	if (frame == (unsigned int)proxy.cvars.sv_fps.integer)
 	{
 		Proxy_UpdateCvars();
-
-		if (proxy.isOriginalEngine)
-		{
-			Proxy_OriginalEngine_UpdateCvars();
-		}
+		Proxy_OriginalEngine_UpdateCvars();
 
 		frame = 0;
 	}

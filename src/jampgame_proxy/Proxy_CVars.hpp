@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sdk/qcommon/q_shared.hpp"
+#include <sdk/qcommon/qcommon.h>
 
 struct cvarTable_t {
 	vmCvar_t*	vmCvar;

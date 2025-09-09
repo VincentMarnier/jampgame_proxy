@@ -1,6 +1,6 @@
 #pragma once
 
-#include "sdk/qcommon/q_platform.hpp"
+#include <sdk/qcommon/qcommon.h>
 
 const char* Proxy_FS_GetCurrentGameDir(bool emptybase = false);
 

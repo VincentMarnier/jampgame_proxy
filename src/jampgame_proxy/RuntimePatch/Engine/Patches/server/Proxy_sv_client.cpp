@@ -5,6 +5,7 @@
 #include "jampgame_proxy/RuntimePatch/Engine/Proxy_Engine_Utils.hpp"
 #include "Proxy_sv_ccmds.hpp"
 #include "Proxy_sv_client.hpp"
+#include "jampgame_proxy/Proxy_Utils.hpp"
 
 /*
 ===============
@@ -57,7 +58,7 @@ static qboolean Proxy_SV_ClientCommand(client_t* cl, msg_t* msg) {
 	server.functions.SV_ExecuteClientCommand(cl, s, clientOk);
 
 	cl->lastClientCommand = seq;
-	Com_sprintf(cl->lastClientCommandString, sizeof(cl->lastClientCommandString), "%s", s);
+	jampgame.functions.Com_sprintf(cl->lastClientCommandString, sizeof(cl->lastClientCommandString), "%s", s);
 
 	return qtrue;		// continue procesing
 }
@@ -112,7 +113,7 @@ static void Proxy_SV_UserMove(client_t* client, msg_t* msg, qboolean delta)
 	// also use the last acknowledged server command in the key
 	key ^= server.common.functions.Com_HashKey(client->reliableCommands[client->reliableAcknowledge & (MAX_RELIABLE_COMMANDS - 1)], 32);
 
-	Com_Memset(&nullcmd, 0, sizeof(nullcmd));
+	memset(&nullcmd, 0, sizeof(nullcmd));
 	oldcmd = &nullcmd;
 	for (i = 0; i < cmdCount; i++)
 	{
@@ -126,7 +127,7 @@ static void Proxy_SV_UserMove(client_t* client, msg_t* msg, qboolean delta)
 	if (!proxy.originalEngineCvars.proxy_sv_pingFix.integer || client->frames[client->messageAcknowledge & PACKET_MASK].messageAcked == -1)
 	{
 		//cl->frames[cl->messageAcknowledge & PACKET_MASK].messageAcked = server.svs->time;
-		client->frames[client->messageAcknowledge & PACKET_MASK].messageAcked = (proxy.originalEngineCvars.proxy_sv_pingFix.integer ? proxy.trap->Milliseconds() : server.svs->time);
+		client->frames[client->messageAcknowledge & PACKET_MASK].messageAcked = (proxy.originalEngineCvars.proxy_sv_pingFix.integer ? trap_Milliseconds() : server.svs->time);
 	}
 	// Proxy <--------------
 
@@ -152,7 +153,7 @@ static void Proxy_SV_UserMove(client_t* client, msg_t* msg, qboolean delta)
 	}
 
 	// Proxy -------------->
-	std::size_t packetIndex;
+	size_t packetIndex;
 
 	packetIndex = proxy.clientData[getClientNumFromAddr(client)].cmdIndex;
 	// Proxy <--------------
@@ -189,7 +190,7 @@ static void Proxy_SV_UserMove(client_t* client, msg_t* msg, qboolean delta)
 		if (proxy.originalEngineCvars.proxy_sv_enableNetStatus.integer)
 		{
 			Proxy_Engine_Client_UpdateUcmdStats(getClientNumFromAddr(client), &cmds[i], packetIndex);
-			Proxy_Engine_Client_UpdateTimenudge(client, &cmds[i], proxy.trap->Milliseconds());
+			Proxy_Engine_Client_UpdateTimenudge(client, &cmds[i], trap_Milliseconds());
 		}
 		// Proxy <--------------
 	}
@@ -367,7 +368,7 @@ void Proxy_SV_SendClientGameState(client_t* client)
 	}
 
 	// write the baselines
-	Com_Memset(&nullstate, 0, sizeof(nullstate));
+	memset(&nullstate, 0, sizeof(nullstate));
 
 	for (start = 0; start < MAX_GENTITIES; start++)
 	{
@@ -396,7 +397,7 @@ void Proxy_SV_SendClientGameState(client_t* client)
 		z_stream zdata;
 
 		// Send the height map
-		std::memset(&zdata, 0, sizeof(z_stream));
+		memset(&zdata, 0, sizeof(z_stream));
 		deflateInit(&zdata, Z_MAX_COMPRESSION);
 
 		unsigned char heightmap[15000];
@@ -413,7 +414,7 @@ void Proxy_SV_SendClientGameState(client_t* client)
 		deflateEnd(&zdata);
 
 		// Send the flatten map
-		std::memset(&zdata, 0, sizeof(z_stream));
+		memset(&zdata, 0, sizeof(z_stream));
 		deflateInit(&zdata, Z_MAX_COMPRESSION);
 
 		zdata.next_out = (unsigned char*)heightmap;
@@ -459,22 +460,30 @@ void (*Original_SV_UserinfoChanged)(client_t*);
 void Proxy_SV_UserinfoChanged(client_t* cl) {
 	const char* val = nullptr;
 
-	val = Info_ValueForKey(cl->userinfo, "model");
+	val = jampgame.functions.Info_ValueForKey(cl->userinfo, "model");
 
 	// Fix model length crash on some custom clients
 	// This check is needed here first on the connection, before it goes to SV_UpdateUserinfo_f -> ClientUserinfoChanged
 	// There's also a check done in ClientUserinfoChanged
 	if (val)
 	{
-		const std::size_t modelLen = std::strlen(val);
+		const size_t modelLen = strlen(val);
 
-		if (!Q_IsValidAsciiStr(val) || modelLen >= /*MAX_QPATH*/ (std::size_t)proxy.cvars.proxy_sv_modelPathLength.integer)
+		if (!Q_IsValidAsciiStr(val) || modelLen >= /*MAX_QPATH*/ (size_t)proxy.cvars.proxy_sv_modelPathLength.integer)
 		{
-			Info_SetValueForKey(cl->userinfo, "model", "kyle");
+			jampgame.functions.Info_SetValueForKey(cl->userinfo, "model", "kyle");
 		}
 	}
 
 	Original_SV_UserinfoChanged(cl);
+}
+
+qboolean FS_CheckDirTraversal(const char* checkdir)
+{
+	if (strstr(checkdir, "../") || strstr(checkdir, "..\\"))
+		return qtrue;
+
+	return qfalse;
 }
 
 /*
@@ -489,9 +498,9 @@ void Proxy_SV_BeginDownload_f(client_t* cl)
 		return;
 	
 	const char* fileName = server.common.functions.Cmd_Argv(1);
-	const std::size_t fileNameLength = std::strlen(fileName);
+	const size_t fileNameLength = strlen(fileName);
 
-	if (fileNameLength < 5 || FS_CheckDirTraversal(fileName) || Q_stricmpn(&fileName[fileNameLength - 4], ".pk3", 4) != 0) {
+	if (fileNameLength < 5 || FS_CheckDirTraversal(fileName) || jampgame.functions.Q_stricmpn(&fileName[fileNameLength - 4], ".pk3", 4) != 0) {
 		return;
 	}
 
@@ -649,7 +658,7 @@ static void Proxy_SV_UpdateUserinfo_f(client_t* cl) {
 		cl->lastUserInfoChange = server.svs->time + INFO_CHANGE_MIN_INTERVAL;
 	}
 
-	Q_strncpyz(cl->userinfo, arg, sizeof(cl->userinfo));
+	jampgame.functions.Q_strncpyz(cl->userinfo, arg, sizeof(cl->userinfo));
 	server.functions.SV_UserinfoChanged(cl);
 	// call prog code to allow overrides
 	Proxy_OriginalAPI_VM_Call(GAME_CLIENT_USERINFO_CHANGED, cl - server.svs->clients);
@@ -863,6 +872,35 @@ void Proxy_SV_ExecuteClientCommand(client_t* cl, const char* s, qboolean clientO
 	}
 }
 
+qboolean FS_FilenameCompare(const char* s1, const char* s2) {
+	int		c1, c2;
+
+	do {
+		c1 = *s1++;
+		c2 = *s2++;
+
+		if (c1 >= 'a' && c1 <= 'z') {
+			c1 -= ('a' - 'A');
+		}
+		if (c2 >= 'a' && c2 <= 'z') {
+			c2 -= ('a' - 'A');
+		}
+
+		if (c1 == '\\' || c1 == ':') {
+			c1 = '/';
+		}
+		if (c2 == '\\' || c2 == ':') {
+			c2 = '/';
+		}
+
+		if (c1 != c2) {
+			return qtrue;		// strings not equal
+		}
+	} while (c1);
+
+	return qfalse;		// strings are equal
+}
+
 /*
 ==================
 SV_WriteDownloadToClient
@@ -886,7 +924,7 @@ void Proxy_SV_WriteDownloadToClient(client_t* cl, msg_t* msg)
 	if (!cl->download)
 	{
 		// Chop off filename extension.
-		Com_sprintf(pakbuf, sizeof(pakbuf), "%s", cl->downloadName);
+		jampgame.functions.Com_sprintf(pakbuf, sizeof(pakbuf), "%s", cl->downloadName);
 		pakptr = strrchr(pakbuf, '.');
 
 		if (pakptr)
@@ -894,7 +932,7 @@ void Proxy_SV_WriteDownloadToClient(client_t* cl, msg_t* msg)
 			*pakptr = '\0';
 
 			// Check for pk3 filename extension
-			if (!Q_stricmp(pakptr + 1, "pk3"))
+			if (!jampgame.functions.Q_stricmp(pakptr + 1, "pk3"))
 			{
 				const char* referencedPaks = server.common.functions.FS_ReferencedPakNames();
 
@@ -920,7 +958,7 @@ void Proxy_SV_WriteDownloadToClient(client_t* cl, msg_t* msg)
 		if (unreferenced)
 		{
 			server.common.functions.Com_Printf("clientDownload: %d : \"%s\" is not referenced and cannot be downloaded.\n", (int)(cl - server.svs->clients), cl->downloadName);
-			Com_sprintf(errorMessage, sizeof(errorMessage), "File \"%s\" is not referenced and cannot be downloaded.", cl->downloadName);
+			jampgame.functions.Com_sprintf(errorMessage, sizeof(errorMessage), "File \"%s\" is not referenced and cannot be downloaded.", cl->downloadName);
 			
 			server.common.functions.MSG_WriteByte(msg, svc_download);
 			server.common.functions.MSG_WriteShort(msg, 0); // client is expecting block zero

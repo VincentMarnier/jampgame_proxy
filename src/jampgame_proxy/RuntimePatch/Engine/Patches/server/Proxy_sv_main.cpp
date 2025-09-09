@@ -1,7 +1,7 @@
 #include "jampgame_proxy/RuntimePatch/Engine/Proxy_Engine_Wrappers.hpp"
 #include "jampgame_proxy/Imports/server/sv_game.hpp"
 #include "jampgame_proxy/Proxy_Header.hpp"
-#include "sdk/game/g_public.hpp"
+#include <sdk/game/g_public.h>
 #include "Proxy_sv_main.hpp"
 
 /*
@@ -91,7 +91,7 @@ void Proxy_SVC_Status(netadr_t from) {
 	// Proxy -------------->
 	// Fix q3infoboom
 	// In Info_SetValueForKey if the infostring is too big then it will drop the server
-	if (std::strlen(server.common.functions.Cmd_Argv(1)) > 128)
+	if (strlen(server.common.functions.Cmd_Argv(1)) > 128)
 	{
 		return;
 	}
@@ -105,7 +105,7 @@ void Proxy_SVC_Info(netadr_t from) {
 	// Proxy -------------->
 	// Fix q3infoboom
 	// In Info_SetValueForKey if the infostring is too big then it will drop the server
-	if (std::strlen(server.common.functions.Cmd_Argv(1)) > 128)
+	if (strlen(server.common.functions.Cmd_Argv(1)) > 128)
 	{
 		return;
 	}
@@ -134,11 +134,11 @@ void Proxy_SVC_RemoteCommand(netadr_t from, msg_t* msg) {
 	commandCoolDown = (unsigned int)server.svs->time;
 	
 	// Only allow writeconfig on cfg files
-	if (!Q_stricmpn(server.common.functions.Cmd_Argv(2), "writeconfig", 11)) {
+	if (!jampgame.functions.Q_stricmpn(server.common.functions.Cmd_Argv(2), "writeconfig", 11)) {
 		const char* arg3 = server.common.functions.Cmd_Argv(3);
-		const std::size_t arg3Len = std::strlen(arg3);
+		const size_t arg3Len = strlen(arg3);
 		
-		if (arg3Len >= 5 && arg3[arg3Len - 4] == '.' && Q_stricmpn(&arg3[arg3Len - 4], ".cfg", 4)) {
+		if (arg3Len >= 5 && arg3[arg3Len - 4] == '.' && jampgame.functions.Q_stricmpn(&arg3[arg3Len - 4], ".cfg", 4)) {
 			return;
 		}
 	}
@@ -164,7 +164,7 @@ void Proxy_SV_ConnectionlessPacket(netadr_t from, msg_t* msg) {
 	server.common.functions.MSG_BeginReadingOOB(msg);
 	server.common.functions.MSG_ReadLong(msg);		// skip the -1 marker
 
-	if (!Q_strncmp("connect", (const char*)&msg->data[4], 7)) {
+	if (!jampgame.functions.Q_strncmp("connect", (const char*)&msg->data[4], 7)) {
 		server.common.functions.Huff_Decompress(msg, 12);
 	}
 
@@ -177,25 +177,25 @@ void Proxy_SV_ConnectionlessPacket(netadr_t from, msg_t* msg) {
 		server.common.functions.Com_Printf("SV packet %s : %s\n", server.common.functions.NET_AdrToString(from), c);
 	}
 
-	if (!Q_stricmp(c, "getstatus")) {
+	if (!jampgame.functions.Q_stricmp(c, "getstatus")) {
 		server.functions.SVC_Status(from);
 	}
-	else if (!Q_stricmp(c, "getinfo")) {
+	else if (!jampgame.functions.Q_stricmp(c, "getinfo")) {
 		server.functions.SVC_Info(from);
 	}
-	else if (!Q_stricmp(c, "getchallenge")) {
+	else if (!jampgame.functions.Q_stricmp(c, "getchallenge")) {
 		server.functions.SV_GetChallenge(from);
 	}
-	else if (!Q_stricmp(c, "connect")) {
+	else if (!jampgame.functions.Q_stricmp(c, "connect")) {
 		server.functions.SV_DirectConnect(from);
 	}
-	else if (!Q_stricmp(c, "ipAuthorize")) {
+	else if (!jampgame.functions.Q_stricmp(c, "ipAuthorize")) {
 		//SV_AuthorizeIpPacket(from);
 	}
-	else if (!Q_stricmp(c, "rcon")) {
+	else if (!jampgame.functions.Q_stricmp(c, "rcon")) {
 		server.functions.SVC_RemoteCommand(from, msg);
 	}
-	else if (!Q_stricmp(c, "disconnect")) {
+	else if (!jampgame.functions.Q_stricmp(c, "disconnect")) {
 		// if a client starts up a local server, we may see some spurious
 		// server disconnect messages when their new server sees our final
 		// sequenced messages to the old client

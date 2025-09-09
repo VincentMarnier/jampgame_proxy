@@ -29,8 +29,8 @@ void Proxy_Engine_ClientCommand_NetStatus(int clientNum)
 
 	status[0] = 0;
 
-	Q_strcat(status, sizeof(status), "score ping rate   fps  packets timeNudge snaps id name \n");
-	Q_strcat(status, sizeof(status), "----- ---- ------ ---- ------- --------- ----- -- ---------------\n");
+	jampgame.functions.Q_strcat(status, sizeof(status), "score ping rate   fps  packets timeNudge snaps id name \n");
+	jampgame.functions.Q_strcat(status, sizeof(status), "----- ---- ------ ---- ------- --------- ----- -- ---------------\n");
 
 	for (i = 0, cl = server.svs->clients; i < server.cvars.sv_maxclients->integer; i++, cl++)
 	{
@@ -42,13 +42,13 @@ void Proxy_Engine_ClientCommand_NetStatus(int clientNum)
 			continue;
 
 		if (cl->state == CS_CONNECTED)
-			Q_strncpyz(state, "CON ", sizeof(state));
+			jampgame.functions.Q_strncpyz(state, "CON ", sizeof(state));
 		else if (cl->state == CS_ZOMBIE)
-			Q_strncpyz(state, "ZMB ", sizeof(state));
+			jampgame.functions.Q_strncpyz(state, "ZMB ", sizeof(state));
 		else
 		{
 			ping = cl->ping < 9999 ? cl->ping : 9999;
-			Com_sprintf(state, sizeof(state), "%4i", ping);
+			jampgame.functions.Com_sprintf(state, sizeof(state), "%4i", ping);
 		}
 
 		ps = Proxy_GetPlayerStateByClientNum(i);
@@ -73,25 +73,25 @@ void Proxy_Engine_ClientCommand_NetStatus(int clientNum)
 		}
 
 		// No need for truncation "feature" if we move name to the end
-		Q_strcat(status, sizeof(status), va("%5i %s %6i %4i %7i %9i %5i %2i %s^7\n", ps->persistant[PERS_SCORE], state, cl->rate, fps, packets, proxy.clientData[i].timenudge, snaps, i, cl->name));
+		jampgame.functions.Q_strcat(status, sizeof(status), jampgame.functions.va("%5i %s %6i %4i %7i %9i %5i %2i %s^7\n", ps->persistant[PERS_SCORE], state, cl->rate, fps, packets, proxy.clientData[i].timenudge, snaps, i, cl->name));
 	}
 
 	currentClientData->lastTimeNetStatus = server.svs->time;
 
 	char buffer[1012] = { 0 };
-	std::size_t statusLength = std::strlen(status);
-	std::size_t currentProgress = 0;
+	size_t statusLength = strlen(status);
+	size_t currentProgress = 0;
 
 	while (currentProgress < statusLength)
 	{
-		Q_strncpyz(buffer, &status[currentProgress], sizeof(buffer));
+		jampgame.functions.Q_strncpyz(buffer, &status[currentProgress], sizeof(buffer));
 
-		if (std::strlen(buffer) < 1012)
+		if (strlen(buffer) < 1012)
 		{
-			Q_strcat(buffer, sizeof(buffer), "\n");
+			jampgame.functions.Q_strcat(buffer, sizeof(buffer), "\n");
 		}
 
-		proxy.trap->SendServerCommand(clientNum, va("print \"%s", buffer));
-		currentProgress += std::strlen(buffer);
+		trap_SendServerCommand(clientNum, jampgame.functions.va("print \"%s", buffer));
+		currentProgress += strlen(buffer);
 	}
 }

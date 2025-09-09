@@ -25,8 +25,15 @@ along with this program; if not, see <http://www.gnu.org/licenses/>.
 #include "Proxy_Header.hpp"
 #include "Proxy_Translate_SystemCalls.hpp"
 
-NORETURN_PTR void (*Com_Error)(int level, const char* fmt, ...);
-void (*Com_Printf)(const char* fmt, ...);
+typedef union byteAlias_u
+{
+	float f;
+	int32_t i;
+	uint32_t ui;
+	qboolean qb;
+	byte b[4];
+	char c[4];
+} byteAlias_t;
 
 int PASSFLOAT(float x) {
 	byteAlias_t fi;
@@ -37,7 +44,7 @@ int PASSFLOAT(float x) {
 void trap_Print(const char* fmt) {
 	proxy.originalSystemCall(G_PRINT, fmt);
 }
-NORETURN void trap_Error(const char* fmt) {
+void trap_Error(const char* fmt) {
 	proxy.originalSystemCall(G_ERROR, fmt);
 	exit(1);
 }
@@ -93,7 +100,7 @@ void trap_DropClient(int clientNum, const char* reason) {
 	proxy.originalSystemCall(G_DROP_CLIENT, clientNum, reason);
 }
 void trap_SendServerCommand(int clientNum, const char* text) {
-	if (std::strlen(text) > 1022)
+	if (strlen(text) > 1022)
 	{
 		return;
 	}
@@ -131,16 +138,16 @@ int trap_PointContents(const vec3_t point, int passEntityNum) {
 	return proxy.originalSystemCall(G_POINT_CONTENTS, point, passEntityNum);
 }
 qboolean trap_InPVS(const vec3_t p1, const vec3_t p2) {
-	return proxy.originalSystemCall(G_IN_PVS, p1, p2);
+	return (qboolean)proxy.originalSystemCall(G_IN_PVS, p1, p2);
 }
 qboolean trap_InPVSIgnorePortals(const vec3_t p1, const vec3_t p2) {
-	return proxy.originalSystemCall(G_IN_PVS_IGNORE_PORTALS, p1, p2);
+	return (qboolean)proxy.originalSystemCall(G_IN_PVS_IGNORE_PORTALS, p1, p2);
 }
 void trap_AdjustAreaPortalState(sharedEntity_t* ent, qboolean open) {
 	proxy.originalSystemCall(G_ADJUST_AREA_PORTAL_STATE, ent, open);
 }
 qboolean trap_AreasConnected(int area1, int area2) {
-	return proxy.originalSystemCall(G_AREAS_CONNECTED, area1, area2);
+	return (qboolean)proxy.originalSystemCall(G_AREAS_CONNECTED, area1, area2);
 }
 void trap_LinkEntity(sharedEntity_t* ent) {
 	proxy.originalSystemCall(G_LINKENTITY, ent);
@@ -152,7 +159,7 @@ int trap_EntitiesInBox(const vec3_t mins, const vec3_t maxs, int* list, int maxc
 	return proxy.originalSystemCall(G_ENTITIES_IN_BOX, mins, maxs, list, maxcount);
 }
 qboolean trap_EntityContact(const vec3_t mins, const vec3_t maxs, const sharedEntity_t* ent) {
-	return proxy.originalSystemCall(G_ENTITY_CONTACT, mins, maxs, ent);
+	return (qboolean)proxy.originalSystemCall(G_ENTITY_CONTACT, mins, maxs, ent);
 }
 int trap_BotAllocateClient(void) {
 	return proxy.originalSystemCall(G_BOT_ALLOCATE_CLIENT);
@@ -164,7 +171,7 @@ void trap_GetUsercmd(int clientNum, usercmd_t* cmd) {
 	proxy.originalSystemCall(G_GET_USERCMD, clientNum, cmd);
 }
 qboolean trap_GetEntityToken(char* buffer, int bufferSize) {
-	return proxy.originalSystemCall(G_GET_ENTITY_TOKEN, buffer, bufferSize);
+	return (qboolean)proxy.originalSystemCall(G_GET_ENTITY_TOKEN, buffer, bufferSize);
 }
 void trap_SiegePersSet(siegePers_t* pers) {
 	proxy.originalSystemCall(G_SIEGEPERSSET, pers);
@@ -191,13 +198,13 @@ void trap_TraceCapsule(trace_t* results, const vec3_t start, const vec3_t mins, 
 	proxy.originalSystemCall(G_TRACECAPSULE, results, start, mins, maxs, end, passEntityNum, contentmask, 0, 10);
 }
 qboolean trap_EntityContactCapsule(const vec3_t mins, const vec3_t maxs, const sharedEntity_t* ent) {
-	return proxy.originalSystemCall(G_ENTITY_CONTACTCAPSULE, mins, maxs, ent);
+	return (qboolean)proxy.originalSystemCall(G_ENTITY_CONTACTCAPSULE, mins, maxs, ent);
 }
 int trap_SP_GetStringTextString(const char* text, char* buffer, int bufferLength) {
 	return proxy.originalSystemCall(SP_GETSTRINGTEXTSTRING, text, buffer, bufferLength);
 }
 qboolean trap_ROFF_Clean(void) {
-	return proxy.originalSystemCall(G_ROFF_CLEAN);
+	return (qboolean)proxy.originalSystemCall(G_ROFF_CLEAN);
 }
 void trap_ROFF_UpdateEntities(void) {
 	proxy.originalSystemCall(G_ROFF_UPDATE_ENTITIES);
@@ -206,10 +213,10 @@ int trap_ROFF_Cache(char* file) {
 	return proxy.originalSystemCall(G_ROFF_CACHE, file);
 }
 qboolean trap_ROFF_Play(int entID, int roffID, qboolean doTranslation) {
-	return proxy.originalSystemCall(G_ROFF_PLAY, entID, roffID, doTranslation);
+	return (qboolean)proxy.originalSystemCall(G_ROFF_PLAY, entID, roffID, doTranslation);
 }
 qboolean trap_ROFF_Purge_Ent(int entID) {
-	return proxy.originalSystemCall(G_ROFF_PURGE_ENT, entID);
+	return (qboolean)proxy.originalSystemCall(G_ROFF_PURGE_ENT, entID);
 }
 void trap_TrueMalloc(void** ptr, int size) {
 	proxy.originalSystemCall(G_TRUEMALLOC, ptr, size);
@@ -221,25 +228,25 @@ int trap_ICARUS_RunScript(sharedEntity_t* ent, const char* name) {
 	return proxy.originalSystemCall(G_ICARUS_RUNSCRIPT, ent, name);
 }
 qboolean trap_ICARUS_RegisterScript(const char* name, qboolean bCalledDuringInterrogate) {
-	return proxy.originalSystemCall(G_ICARUS_REGISTERSCRIPT, name, bCalledDuringInterrogate);
+	return (qboolean)proxy.originalSystemCall(G_ICARUS_REGISTERSCRIPT, name, bCalledDuringInterrogate);
 }
 void trap_ICARUS_Init(void) {
 	proxy.originalSystemCall(G_ICARUS_INIT);
 }
 qboolean trap_ICARUS_ValidEnt(sharedEntity_t* ent) {
-	return proxy.originalSystemCall(G_ICARUS_VALIDENT, ent);
+	return (qboolean)proxy.originalSystemCall(G_ICARUS_VALIDENT, ent);
 }
 qboolean trap_ICARUS_IsInitialized(int entID) {
-	return proxy.originalSystemCall(G_ICARUS_ISINITIALIZED, entID);
+	return (qboolean)proxy.originalSystemCall(G_ICARUS_ISINITIALIZED, entID);
 }
 qboolean trap_ICARUS_MaintainTaskManager(int entID) {
-	return proxy.originalSystemCall(G_ICARUS_MAINTAINTASKMANAGER, entID);
+	return (qboolean)proxy.originalSystemCall(G_ICARUS_MAINTAINTASKMANAGER, entID);
 }
 qboolean trap_ICARUS_IsRunning(int entID) {
-	return proxy.originalSystemCall(G_ICARUS_ISRUNNING, entID);
+	return (qboolean)proxy.originalSystemCall(G_ICARUS_ISRUNNING, entID);
 }
 qboolean trap_ICARUS_TaskIDPending(sharedEntity_t* ent, int taskID) {
-	return proxy.originalSystemCall(G_ICARUS_TASKIDPENDING, ent, taskID);
+	return (qboolean)proxy.originalSystemCall(G_ICARUS_TASKIDPENDING, ent, taskID);
 }
 void trap_ICARUS_InitEnt(sharedEntity_t* ent) {
 	proxy.originalSystemCall(G_ICARUS_INITENT, ent);
@@ -281,10 +288,10 @@ void trap_Nav_Free(void) {
 	proxy.originalSystemCall(G_NAV_FREE);
 }
 qboolean trap_Nav_Load(const char* filename, int checksum) {
-	return proxy.originalSystemCall(G_NAV_LOAD, filename, checksum);
+	return (qboolean)proxy.originalSystemCall(G_NAV_LOAD, filename, checksum);
 }
 qboolean trap_Nav_Save(const char* filename, int checksum) {
-	return proxy.originalSystemCall(G_NAV_SAVE, filename, checksum);
+	return (qboolean)proxy.originalSystemCall(G_NAV_SAVE, filename, checksum);
 }
 int trap_Nav_AddRawPoint(vec3_t point, int flags, int radius) {
 	return proxy.originalSystemCall(G_NAV_ADDRAWPOINT, point, flags, radius);
@@ -323,7 +330,7 @@ int trap_Nav_GetNumNodes(void) {
 	return proxy.originalSystemCall(G_NAV_GETNUMNODES);
 }
 qboolean trap_Nav_Connected(int startID, int endID) {
-	return proxy.originalSystemCall(G_NAV_CONNECTED, startID, endID);
+	return (qboolean)proxy.originalSystemCall(G_NAV_CONNECTED, startID, endID);
 }
 int trap_Nav_GetPathCost(int startID, int endID) {
 	return proxy.originalSystemCall(G_NAV_GETPATHCOST, startID, endID);
@@ -341,10 +348,10 @@ void trap_Nav_AddFailedNode(sharedEntity_t* ent, int nodeID) {
 	proxy.originalSystemCall(G_NAV_ADDFAILEDNODE, ent, nodeID);
 }
 qboolean trap_Nav_NodeFailed(sharedEntity_t* ent, int nodeID) {
-	return proxy.originalSystemCall(G_NAV_NODEFAILED, ent, nodeID);
+	return (qboolean)proxy.originalSystemCall(G_NAV_NODEFAILED, ent, nodeID);
 }
 qboolean trap_Nav_NodesAreNeighbors(int startID, int endID) {
-	return proxy.originalSystemCall(G_NAV_NODESARENEIGHBORS, startID, endID);
+	return (qboolean)proxy.originalSystemCall(G_NAV_NODESARENEIGHBORS, startID, endID);
 }
 void trap_Nav_ClearFailedEdge(failedEdge_t* failedEdge) {
 	proxy.originalSystemCall(G_NAV_CLEARFAILEDEDGE, failedEdge);
@@ -359,13 +366,13 @@ void trap_Nav_AddFailedEdge(int entID, int startID, int endID) {
 	proxy.originalSystemCall(G_NAV_ADDFAILEDEDGE, entID, startID, endID);
 }
 qboolean trap_Nav_CheckFailedEdge(failedEdge_t* failedEdge) {
-	return proxy.originalSystemCall(G_NAV_CHECKFAILEDEDGE, failedEdge);
+	return (qboolean)proxy.originalSystemCall(G_NAV_CHECKFAILEDEDGE, failedEdge);
 }
 void trap_Nav_CheckAllFailedEdges(void) {
 	proxy.originalSystemCall(G_NAV_CHECKALLFAILEDEDGES);
 }
 qboolean trap_Nav_RouteBlocked(int startID, int testEdgeID, int endID, int rejectRank) {
-	return proxy.originalSystemCall(G_NAV_ROUTEBLOCKED, startID, testEdgeID, endID, rejectRank);
+	return (qboolean)proxy.originalSystemCall(G_NAV_ROUTEBLOCKED, startID, testEdgeID, endID, rejectRank);
 }
 int trap_Nav_GetBestNodeAltRoute(int startID, int endID, int* pathCost, int rejectID) {
 	return proxy.originalSystemCall(G_NAV_GETBESTNODEALTROUTE, startID, endID, pathCost, rejectID);
@@ -395,7 +402,7 @@ void trap_Nav_FlagAllNodes(int newFlag) {
 	proxy.originalSystemCall(G_NAV_FLAGALLNODES, newFlag);
 }
 qboolean trap_Nav_GetPathsCalculated(void) {
-	return proxy.originalSystemCall(G_NAV_GETPATHSCALCULATED);
+	return (qboolean)proxy.originalSystemCall(G_NAV_GETPATHSCALCULATED);
 }
 void trap_Nav_SetPathsCalculated(qboolean newVal) {
 	proxy.originalSystemCall(G_NAV_SETPATHSCALCULATED, newVal);
@@ -856,7 +863,7 @@ int trap_G2API_InitGhoul2Model(void** ghoul2Ptr, const char* fileName, int model
 	return proxy.originalSystemCall(G_G2_INITGHOUL2MODEL, ghoul2Ptr, fileName, modelIndex, customSkin, customShader, modelFlags, lodBias);
 }
 qboolean trap_G2API_SetSkin(void* ghoul2, int modelIndex, qhandle_t customSkin, qhandle_t renderSkin) {
-	return proxy.originalSystemCall(G_G2_SETSKIN, ghoul2, modelIndex, customSkin, renderSkin);
+	return (qboolean)proxy.originalSystemCall(G_G2_SETSKIN, ghoul2, modelIndex, customSkin, renderSkin);
 }
 int trap_G2API_Ghoul2Size(void* ghlInfo) {
 	return proxy.originalSystemCall(G_G2_SIZE, ghlInfo);
@@ -868,13 +875,13 @@ void trap_G2API_SetBoltInfo(void* ghoul2, int modelIndex, int boltInfo) {
 	proxy.originalSystemCall(G_G2_SETBOLTINFO, ghoul2, modelIndex, boltInfo);
 }
 qboolean trap_G2API_SetBoneAngles(void* ghoul2, int modelIndex, const char* boneName, const vec3_t angles, const int flags, const int up, const int right, const int forward, qhandle_t* modelList, int blendTime, int currentTime) {
-	return (proxy.originalSystemCall(G_G2_ANGLEOVERRIDE, ghoul2, modelIndex, boneName, angles, flags, up, right, forward, modelList, blendTime, currentTime));
+	return (qboolean)proxy.originalSystemCall(G_G2_ANGLEOVERRIDE, ghoul2, modelIndex, boneName, angles, flags, up, right, forward, modelList, blendTime, currentTime);
 }
 qboolean trap_G2API_SetBoneAnim(void* ghoul2, const int modelIndex, const char* boneName, const int startFrame, const int endFrame, const int flags, const float animSpeed, const int currentTime, const float setFrame, const int blendTime) {
-	return proxy.originalSystemCall(G_G2_PLAYANIM, ghoul2, modelIndex, boneName, startFrame, endFrame, flags, PASSFLOAT(animSpeed), currentTime, PASSFLOAT(setFrame), blendTime);
+	return (qboolean)proxy.originalSystemCall(G_G2_PLAYANIM, ghoul2, modelIndex, boneName, startFrame, endFrame, flags, PASSFLOAT(animSpeed), currentTime, PASSFLOAT(setFrame), blendTime);
 }
 qboolean trap_G2API_GetBoneAnim(void* ghoul2, const char* boneName, const int currentTime, float* currentFrame, int* startFrame, int* endFrame, int* flags, float* animSpeed, int* modelList, const int modelIndex) {
-	return proxy.originalSystemCall(G_G2_GETBONEANIM, ghoul2, boneName, currentTime, currentFrame, startFrame, endFrame, flags, animSpeed, modelList, modelIndex);
+	return (qboolean)proxy.originalSystemCall(G_G2_GETBONEANIM, ghoul2, boneName, currentTime, currentFrame, startFrame, endFrame, flags, animSpeed, modelList, modelIndex);
 }
 void trap_G2API_GetGLAName(void* ghoul2, int modelIndex, char* fillBuf) {
 	proxy.originalSystemCall(G_G2_GETGLANAME, ghoul2, modelIndex, fillBuf);
@@ -889,13 +896,13 @@ void trap_G2API_DuplicateGhoul2Instance(void* g2From, void** g2To) {
 	proxy.originalSystemCall(G_G2_DUPLICATEGHOUL2INSTANCE, g2From, g2To);
 }
 qboolean trap_G2API_HasGhoul2ModelOnIndex(void* ghlInfo, int modelIndex) {
-	return proxy.originalSystemCall(G_G2_HASGHOUL2MODELONINDEX, ghlInfo, modelIndex);
+	return (qboolean)proxy.originalSystemCall(G_G2_HASGHOUL2MODELONINDEX, ghlInfo, modelIndex);
 }
 qboolean trap_G2API_RemoveGhoul2Model(void* ghlInfo, int modelIndex) {
-	return proxy.originalSystemCall(G_G2_REMOVEGHOUL2MODEL, ghlInfo, modelIndex);
+	return (qboolean)proxy.originalSystemCall(G_G2_REMOVEGHOUL2MODEL, ghlInfo, modelIndex);
 }
 qboolean trap_G2API_RemoveGhoul2Models(void* ghlInfo) {
-	return proxy.originalSystemCall(G_G2_REMOVEGHOUL2MODELS, ghlInfo);
+	return (qboolean)proxy.originalSystemCall(G_G2_REMOVEGHOUL2MODELS, ghlInfo);
 }
 void trap_G2API_CleanGhoul2Models(void** ghoul2Ptr) {
 	proxy.originalSystemCall(G_G2_CLEANMODELS, ghoul2Ptr);
@@ -910,16 +917,16 @@ void trap_G2API_GetSurfaceName(void* ghoul2, int surfNumber, int modelIndex, cha
 	proxy.originalSystemCall(G_G2_GETSURFACENAME, ghoul2, surfNumber, modelIndex, fillBuf);
 }
 qboolean trap_G2API_SetRootSurface(void* ghoul2, const int modelIndex, const char* surfaceName) {
-	return proxy.originalSystemCall(G_G2_SETROOTSURFACE, ghoul2, modelIndex, surfaceName);
+	return (qboolean)proxy.originalSystemCall(G_G2_SETROOTSURFACE, ghoul2, modelIndex, surfaceName);
 }
 qboolean trap_G2API_SetSurfaceOnOff(void* ghoul2, const char* surfaceName, const int flags) {
-	return proxy.originalSystemCall(G_G2_SETSURFACEONOFF, ghoul2, surfaceName, flags);
+	return (qboolean)proxy.originalSystemCall(G_G2_SETSURFACEONOFF, ghoul2, surfaceName, flags);
 }
 qboolean trap_G2API_SetNewOrigin(void* ghoul2, const int boltIndex) {
-	return proxy.originalSystemCall(G_G2_SETNEWORIGIN, ghoul2, boltIndex);
+	return (qboolean)proxy.originalSystemCall(G_G2_SETNEWORIGIN, ghoul2, boltIndex);
 }
 qboolean trap_G2API_DoesBoneExist(void* ghoul2, int modelIndex, const char* boneName) {
-	return proxy.originalSystemCall(G_G2_DOESBONEEXIST, ghoul2, modelIndex, boneName);
+	return (qboolean)proxy.originalSystemCall(G_G2_DOESBONEEXIST, ghoul2, modelIndex, boneName);
 }
 int trap_G2API_GetSurfaceRenderStatus(void* ghoul2, const int modelIndex, const char* surfaceName) {
 	return proxy.originalSystemCall(G_G2_GETSURFACERENDERSTATUS, ghoul2, modelIndex, surfaceName);
@@ -934,31 +941,31 @@ void trap_G2API_AnimateG2Models(void* ghoul2, int time, sharedRagDollUpdateParam
 	proxy.originalSystemCall(G_G2_ANIMATEG2MODELS, ghoul2, time, params);
 }
 qboolean trap_G2API_RagPCJConstraint(void* ghoul2, const char* boneName, vec3_t min, vec3_t max) {
-	return proxy.originalSystemCall(G_G2_RAGPCJCONSTRAINT, ghoul2, boneName, min, max);
+	return (qboolean)proxy.originalSystemCall(G_G2_RAGPCJCONSTRAINT, ghoul2, boneName, min, max);
 }
 qboolean trap_G2API_RagPCJGradientSpeed(void* ghoul2, const char* boneName, const float speed) {
-	return proxy.originalSystemCall(G_G2_RAGPCJGRADIENTSPEED, ghoul2, boneName, PASSFLOAT(speed));
+	return (qboolean)proxy.originalSystemCall(G_G2_RAGPCJGRADIENTSPEED, ghoul2, boneName, PASSFLOAT(speed));
 }
 qboolean trap_G2API_RagEffectorGoal(void* ghoul2, const char* boneName, vec3_t pos) {
-	return proxy.originalSystemCall(G_G2_RAGEFFECTORGOAL, ghoul2, boneName, pos);
+	return (qboolean)proxy.originalSystemCall(G_G2_RAGEFFECTORGOAL, ghoul2, boneName, pos);
 }
 qboolean trap_G2API_GetRagBonePos(void* ghoul2, const char* boneName, vec3_t pos, vec3_t entAngles, vec3_t entPos, vec3_t entScale) {
-	return proxy.originalSystemCall(G_G2_GETRAGBONEPOS, ghoul2, boneName, pos, entAngles, entPos, entScale);
+	return (qboolean)proxy.originalSystemCall(G_G2_GETRAGBONEPOS, ghoul2, boneName, pos, entAngles, entPos, entScale);
 }
 qboolean trap_G2API_RagEffectorKick(void* ghoul2, const char* boneName, vec3_t velocity) {
-	return proxy.originalSystemCall(G_G2_RAGEFFECTORKICK, ghoul2, boneName, velocity);
+	return (qboolean)proxy.originalSystemCall(G_G2_RAGEFFECTORKICK, ghoul2, boneName, velocity);
 }
 qboolean trap_G2API_RagForceSolve(void* ghoul2, qboolean force) {
-	return proxy.originalSystemCall(G_G2_RAGFORCESOLVE, ghoul2, force);
+	return (qboolean)proxy.originalSystemCall(G_G2_RAGFORCESOLVE, ghoul2, force);
 }
 qboolean trap_G2API_SetBoneIKState(void* ghoul2, int time, const char* boneName, int ikState, sharedSetBoneIKStateParams_t* params) {
-	return proxy.originalSystemCall(G_G2_SETBONEIKSTATE, ghoul2, time, boneName, ikState, params);
+	return (qboolean)proxy.originalSystemCall(G_G2_SETBONEIKSTATE, ghoul2, time, boneName, ikState, params);
 }
 qboolean trap_G2API_IKMove(void* ghoul2, int time, sharedIKMoveParams_t* params) {
-	return proxy.originalSystemCall(G_G2_IKMOVE, ghoul2, time, params);
+	return (qboolean)proxy.originalSystemCall(G_G2_IKMOVE, ghoul2, time, params);
 }
 qboolean trap_G2API_RemoveBone(void* ghoul2, const char* boneName, int modelIndex) {
-	return proxy.originalSystemCall(G_G2_REMOVEBONE, ghoul2, boneName, modelIndex);
+	return (qboolean)proxy.originalSystemCall(G_G2_REMOVEBONE, ghoul2, boneName, modelIndex);
 }
 void trap_G2API_AttachInstanceToEntNum(void* ghoul2, int entityNum, qboolean serverb) {
 	proxy.originalSystemCall(G_G2_ATTACHINSTANCETOENTNUM, ghoul2, entityNum, serverb);
@@ -970,7 +977,7 @@ void trap_G2API_CleanEntAttachments(void) {
 	proxy.originalSystemCall(G_G2_CLEANENTATTACHMENTS);
 }
 qboolean trap_G2API_OverrideServer(void* serverInstance) {
-	return proxy.originalSystemCall(G_G2_OVERRIDESERVER, serverInstance);
+	return (qboolean)proxy.originalSystemCall(G_G2_OVERRIDESERVER, serverInstance);
 }
 const char* trap_SetActiveSubBSP(int index) {
 	return (char*)proxy.originalSystemCall(G_SET_ACTIVE_SUBBSP, index);
@@ -1027,349 +1034,4 @@ void SVSyscall_Trace(trace_t* results, const vec3_t start, const vec3_t mins, co
 	{
 		trap_Trace(results, start, mins, maxs, end, passEntityNum, contentmask);
 	}
-}
-
-NORETURN void QDECL G_Error(int errorLevel, const char* error, ...) {
-	va_list argptr;
-	char text[1024];
-
-	va_start(argptr, error);
-	Q_vsnprintf(text, sizeof(text), error, argptr);
-	va_end(argptr);
-
-	trap_Error(text);
-}
-
-void QDECL G_Printf(const char* msg, ...) {
-	va_list argptr;
-	char text[4096] = { 0 };
-	int ret;
-
-	va_start(argptr, msg);
-	ret = Q_vsnprintf(text, sizeof(text), msg, argptr);
-	va_end(argptr);
-
-	if (ret == -1)
-		trap_Print("G_Printf: overflow of 4096 bytes buffer\n");
-	else
-		trap_Print(text);
-}
-
-void Proxy_Translate_SystemCalls(void) {
-	static gameImport_t import = { 0 };
-
-	proxy.trap = &import;
-
-	Com_Error = G_Error;
-	Com_Printf = G_Printf;
-
-	proxy.trap->Print = Com_Printf;
-	proxy.trap->Error = Com_Error;
-	proxy.trap->Milliseconds = trap_Milliseconds;
-	proxy.trap->PrecisionTimerStart = trap_PrecisionTimer_Start;
-	proxy.trap->PrecisionTimerEnd = trap_PrecisionTimer_End;
-	proxy.trap->SV_RegisterSharedMemory = trap_SV_RegisterSharedMemory;
-	proxy.trap->RealTime = trap_RealTime;
-	proxy.trap->TrueMalloc = trap_TrueMalloc;
-	proxy.trap->TrueFree = trap_TrueFree;
-	proxy.trap->SnapVector = trap_SnapVector;
-	proxy.trap->Cvar_Register = trap_Cvar_Register;
-	proxy.trap->Cvar_Set = trap_Cvar_Set;
-	proxy.trap->Cvar_Update = trap_Cvar_Update;
-	proxy.trap->Cvar_VariableIntegerValue = trap_Cvar_VariableIntegerValue;
-	proxy.trap->Cvar_VariableStringBuffer = trap_Cvar_VariableStringBuffer;
-	proxy.trap->Argc = trap_Argc;
-	proxy.trap->Argv = trap_Argv;
-	proxy.trap->FS_Close = trap_FS_FCloseFile;
-	proxy.trap->FS_GetFileList = trap_FS_GetFileList;
-	proxy.trap->FS_Open = trap_FS_FOpenFile;
-	proxy.trap->FS_Read = SVSyscall_FS_Read;
-	proxy.trap->FS_Write = SVSyscall_FS_Write;
-	proxy.trap->AdjustAreaPortalState = trap_AdjustAreaPortalState;
-	proxy.trap->AreasConnected = trap_AreasConnected;
-	proxy.trap->DebugPolygonCreate = trap_DebugPolygonCreate;
-	proxy.trap->DebugPolygonDelete = trap_DebugPolygonDelete;
-	proxy.trap->DropClient = trap_DropClient;
-	proxy.trap->EntitiesInBox = trap_EntitiesInBox;
-	proxy.trap->EntityContact = SVSyscall_EntityContact;
-	proxy.trap->Trace = SVSyscall_Trace;
-	proxy.trap->GetConfigstring = trap_GetConfigstring;
-	proxy.trap->GetEntityToken = trap_GetEntityToken;
-	proxy.trap->GetServerinfo = trap_GetServerinfo;
-	proxy.trap->GetUsercmd = trap_GetUsercmd;
-	proxy.trap->GetUserinfo = trap_GetUserinfo;
-	proxy.trap->InPVS = trap_InPVS;
-	proxy.trap->InPVSIgnorePortals = trap_InPVSIgnorePortals;
-	proxy.trap->LinkEntity = trap_LinkEntity;
-	proxy.trap->LocateGameData = trap_LocateGameData;
-	proxy.trap->PointContents = trap_PointContents;
-	proxy.trap->SendConsoleCommand = trap_SendConsoleCommand;
-	proxy.trap->SendServerCommand = trap_SendServerCommand;
-	proxy.trap->SetBrushModel = trap_SetBrushModel;
-	proxy.trap->SetConfigstring = trap_SetConfigstring;
-	proxy.trap->SetServerCull = trap_SetServerCull;
-	proxy.trap->SetUserinfo = trap_SetUserinfo;
-	proxy.trap->SiegePersSet = trap_SiegePersSet;
-	proxy.trap->SiegePersGet = trap_SiegePersGet;
-	proxy.trap->UnlinkEntity = trap_UnlinkEntity;
-	proxy.trap->ROFF_Clean = trap_ROFF_Clean;
-	proxy.trap->ROFF_UpdateEntities = trap_ROFF_UpdateEntities;
-	proxy.trap->ROFF_Cache = trap_ROFF_Cache;
-	proxy.trap->ROFF_Play = trap_ROFF_Play;
-	proxy.trap->ROFF_Purge_Ent = trap_ROFF_Purge_Ent;
-	proxy.trap->ICARUS_RunScript = trap_ICARUS_RunScript;
-	proxy.trap->ICARUS_RegisterScript = trap_ICARUS_RegisterScript;
-	proxy.trap->ICARUS_Init = trap_ICARUS_Init;
-	proxy.trap->ICARUS_ValidEnt = trap_ICARUS_ValidEnt;
-	proxy.trap->ICARUS_IsInitialized = trap_ICARUS_IsInitialized;
-	proxy.trap->ICARUS_MaintainTaskManager = trap_ICARUS_MaintainTaskManager;
-	proxy.trap->ICARUS_IsRunning = trap_ICARUS_IsRunning;
-	proxy.trap->ICARUS_TaskIDPending = trap_ICARUS_TaskIDPending;
-	proxy.trap->ICARUS_InitEnt = trap_ICARUS_InitEnt;
-	proxy.trap->ICARUS_FreeEnt = trap_ICARUS_FreeEnt;
-	proxy.trap->ICARUS_AssociateEnt = trap_ICARUS_AssociateEnt;
-	proxy.trap->ICARUS_Shutdown = trap_ICARUS_Shutdown;
-	proxy.trap->ICARUS_TaskIDSet = trap_ICARUS_TaskIDSet;
-	proxy.trap->ICARUS_TaskIDComplete = trap_ICARUS_TaskIDComplete;
-	proxy.trap->ICARUS_SetVar = trap_ICARUS_SetVar;
-	proxy.trap->ICARUS_VariableDeclared = trap_ICARUS_VariableDeclared;
-	proxy.trap->ICARUS_GetFloatVariable = trap_ICARUS_GetFloatVariable;
-	proxy.trap->ICARUS_GetStringVariable = trap_ICARUS_GetStringVariable;
-	proxy.trap->ICARUS_GetVectorVariable = trap_ICARUS_GetVectorVariable;
-	proxy.trap->Nav_Init = trap_Nav_Init;
-	proxy.trap->Nav_Free = trap_Nav_Free;
-	proxy.trap->Nav_Load = trap_Nav_Load;
-	proxy.trap->Nav_Save = trap_Nav_Save;
-	proxy.trap->Nav_AddRawPoint = trap_Nav_AddRawPoint;
-	proxy.trap->Nav_CalculatePaths = trap_Nav_CalculatePaths;
-	proxy.trap->Nav_HardConnect = trap_Nav_HardConnect;
-	proxy.trap->Nav_ShowNodes = trap_Nav_ShowNodes;
-	proxy.trap->Nav_ShowEdges = trap_Nav_ShowEdges;
-	proxy.trap->Nav_ShowPath = trap_Nav_ShowPath;
-	proxy.trap->Nav_GetNearestNode = trap_Nav_GetNearestNode;
-	proxy.trap->Nav_GetBestNode = trap_Nav_GetBestNode;
-	proxy.trap->Nav_GetNodePosition = trap_Nav_GetNodePosition;
-	proxy.trap->Nav_GetNodeNumEdges = trap_Nav_GetNodeNumEdges;
-	proxy.trap->Nav_GetNodeEdge = trap_Nav_GetNodeEdge;
-	proxy.trap->Nav_GetNumNodes = trap_Nav_GetNumNodes;
-	proxy.trap->Nav_Connected = trap_Nav_Connected;
-	proxy.trap->Nav_GetPathCost = trap_Nav_GetPathCost;
-	proxy.trap->Nav_GetEdgeCost = trap_Nav_GetEdgeCost;
-	proxy.trap->Nav_GetProjectedNode = trap_Nav_GetProjectedNode;
-	proxy.trap->Nav_CheckFailedNodes = trap_Nav_CheckFailedNodes;
-	proxy.trap->Nav_AddFailedNode = trap_Nav_AddFailedNode;
-	proxy.trap->Nav_NodeFailed = trap_Nav_NodeFailed;
-	proxy.trap->Nav_NodesAreNeighbors = trap_Nav_NodesAreNeighbors;
-	proxy.trap->Nav_ClearFailedEdge = trap_Nav_ClearFailedEdge;
-	proxy.trap->Nav_ClearAllFailedEdges = trap_Nav_ClearAllFailedEdges;
-	proxy.trap->Nav_EdgeFailed = trap_Nav_EdgeFailed;
-	proxy.trap->Nav_AddFailedEdge = trap_Nav_AddFailedEdge;
-	proxy.trap->Nav_CheckFailedEdge = trap_Nav_CheckFailedEdge;
-	proxy.trap->Nav_CheckAllFailedEdges = trap_Nav_CheckAllFailedEdges;
-	proxy.trap->Nav_RouteBlocked = trap_Nav_RouteBlocked;
-	proxy.trap->Nav_GetBestNodeAltRoute = trap_Nav_GetBestNodeAltRoute;
-	proxy.trap->Nav_GetBestNodeAltRoute2 = trap_Nav_GetBestNodeAltRoute2;
-	proxy.trap->Nav_GetBestPathBetweenEnts = trap_Nav_GetBestPathBetweenEnts;
-	proxy.trap->Nav_GetNodeRadius = trap_Nav_GetNodeRadius;
-	proxy.trap->Nav_CheckBlockedEdges = trap_Nav_CheckBlockedEdges;
-	proxy.trap->Nav_ClearCheckedNodes = trap_Nav_ClearCheckedNodes;
-	proxy.trap->Nav_CheckedNode = trap_Nav_CheckedNode;
-	proxy.trap->Nav_SetCheckedNode = trap_Nav_SetCheckedNode;
-	proxy.trap->Nav_FlagAllNodes = trap_Nav_FlagAllNodes;
-	proxy.trap->Nav_GetPathsCalculated = trap_Nav_GetPathsCalculated;
-	proxy.trap->Nav_SetPathsCalculated = trap_Nav_SetPathsCalculated;
-	proxy.trap->BotAllocateClient = trap_BotAllocateClient;
-	proxy.trap->BotFreeClient = trap_BotFreeClient;
-	proxy.trap->BotLoadCharacter = trap_BotLoadCharacter;
-	proxy.trap->BotFreeCharacter = trap_BotFreeCharacter;
-	proxy.trap->Characteristic_Float = trap_Characteristic_Float;
-	proxy.trap->Characteristic_BFloat = trap_Characteristic_BFloat;
-	proxy.trap->Characteristic_Integer = trap_Characteristic_Integer;
-	proxy.trap->Characteristic_BInteger = trap_Characteristic_BInteger;
-	proxy.trap->Characteristic_String = trap_Characteristic_String;
-	proxy.trap->BotAllocChatState = trap_BotAllocChatState;
-	proxy.trap->BotFreeChatState = trap_BotFreeChatState;
-	proxy.trap->BotQueueConsoleMessage = trap_BotQueueConsoleMessage;
-	proxy.trap->BotRemoveConsoleMessage = trap_BotRemoveConsoleMessage;
-	proxy.trap->BotNextConsoleMessage = trap_BotNextConsoleMessage;
-	proxy.trap->BotNumConsoleMessages = trap_BotNumConsoleMessages;
-	proxy.trap->BotInitialChat = trap_BotInitialChat;
-	proxy.trap->BotReplyChat = trap_BotReplyChat;
-	proxy.trap->BotChatLength = trap_BotChatLength;
-	proxy.trap->BotEnterChat = trap_BotEnterChat;
-	proxy.trap->StringContains = trap_StringContains;
-	proxy.trap->BotFindMatch = trap_BotFindMatch;
-	proxy.trap->BotMatchVariable = trap_BotMatchVariable;
-	proxy.trap->UnifyWhiteSpaces = trap_UnifyWhiteSpaces;
-	proxy.trap->BotReplaceSynonyms = trap_BotReplaceSynonyms;
-	proxy.trap->BotLoadChatFile = trap_BotLoadChatFile;
-	proxy.trap->BotSetChatGender = trap_BotSetChatGender;
-	proxy.trap->BotSetChatName = trap_BotSetChatName;
-	proxy.trap->BotResetGoalState = trap_BotResetGoalState;
-	proxy.trap->BotResetAvoidGoals = trap_BotResetAvoidGoals;
-	proxy.trap->BotPushGoal = trap_BotPushGoal;
-	proxy.trap->BotPopGoal = trap_BotPopGoal;
-	proxy.trap->BotEmptyGoalStack = trap_BotEmptyGoalStack;
-	proxy.trap->BotDumpAvoidGoals = trap_BotDumpAvoidGoals;
-	proxy.trap->BotDumpGoalStack = trap_BotDumpGoalStack;
-	proxy.trap->BotGoalName = trap_BotGoalName;
-	proxy.trap->BotGetTopGoal = trap_BotGetTopGoal;
-	proxy.trap->BotGetSecondGoal = trap_BotGetSecondGoal;
-	proxy.trap->BotChooseLTGItem = trap_BotChooseLTGItem;
-	proxy.trap->BotChooseNBGItem = trap_BotChooseNBGItem;
-	proxy.trap->BotTouchingGoal = trap_BotTouchingGoal;
-	proxy.trap->BotItemGoalInVisButNotVisible = trap_BotItemGoalInVisButNotVisible;
-	proxy.trap->BotGetLevelItemGoal = trap_BotGetLevelItemGoal;
-	proxy.trap->BotAvoidGoalTime = trap_BotAvoidGoalTime;
-	proxy.trap->BotInitLevelItems = trap_BotInitLevelItems;
-	proxy.trap->BotUpdateEntityItems = trap_BotUpdateEntityItems;
-	proxy.trap->BotLoadItemWeights = trap_BotLoadItemWeights;
-	proxy.trap->BotFreeItemWeights = trap_BotFreeItemWeights;
-	proxy.trap->BotSaveGoalFuzzyLogic = trap_BotSaveGoalFuzzyLogic;
-	proxy.trap->BotAllocGoalState = trap_BotAllocGoalState;
-	proxy.trap->BotFreeGoalState = trap_BotFreeGoalState;
-	proxy.trap->BotResetMoveState = trap_BotResetMoveState;
-	proxy.trap->BotMoveToGoal = trap_BotMoveToGoal;
-	proxy.trap->BotMoveInDirection = trap_BotMoveInDirection;
-	proxy.trap->BotResetAvoidReach = trap_BotResetAvoidReach;
-	proxy.trap->BotResetLastAvoidReach = trap_BotResetLastAvoidReach;
-	proxy.trap->BotReachabilityArea = trap_BotReachabilityArea;
-	proxy.trap->BotMovementViewTarget = trap_BotMovementViewTarget;
-	proxy.trap->BotAllocMoveState = trap_BotAllocMoveState;
-	proxy.trap->BotFreeMoveState = trap_BotFreeMoveState;
-	proxy.trap->BotInitMoveState = trap_BotInitMoveState;
-	proxy.trap->BotChooseBestFightWeapon = trap_BotChooseBestFightWeapon;
-	proxy.trap->BotGetWeaponInfo = trap_BotGetWeaponInfo;
-	proxy.trap->BotLoadWeaponWeights = trap_BotLoadWeaponWeights;
-	proxy.trap->BotAllocWeaponState = trap_BotAllocWeaponState;
-	proxy.trap->BotFreeWeaponState = trap_BotFreeWeaponState;
-	proxy.trap->BotResetWeaponState = trap_BotResetWeaponState;
-	proxy.trap->GeneticParentsAndChildSelection = trap_GeneticParentsAndChildSelection;
-	proxy.trap->BotInterbreedGoalFuzzyLogic = trap_BotInterbreedGoalFuzzyLogic;
-	proxy.trap->BotMutateGoalFuzzyLogic = trap_BotMutateGoalFuzzyLogic;
-	proxy.trap->BotGetNextCampSpotGoal = trap_BotGetNextCampSpotGoal;
-	proxy.trap->BotGetMapLocationGoal = trap_BotGetMapLocationGoal;
-	proxy.trap->BotNumInitialChats = trap_BotNumInitialChats;
-	proxy.trap->BotGetChatMessage = trap_BotGetChatMessage;
-	proxy.trap->BotRemoveFromAvoidGoals = trap_BotRemoveFromAvoidGoals;
-	proxy.trap->BotPredictVisiblePosition = trap_BotPredictVisiblePosition;
-	proxy.trap->BotSetAvoidGoalTime = trap_BotSetAvoidGoalTime;
-	proxy.trap->BotAddAvoidSpot = trap_BotAddAvoidSpot;
-	proxy.trap->BotLibSetup = trap_BotLibSetup;
-	proxy.trap->BotLibShutdown = trap_BotLibShutdown;
-	proxy.trap->BotLibVarSet = trap_BotLibVarSet;
-	proxy.trap->BotLibVarGet = trap_BotLibVarGet;
-	proxy.trap->BotLibDefine = trap_BotLibDefine;
-	proxy.trap->BotLibStartFrame = trap_BotLibStartFrame;
-	proxy.trap->BotLibLoadMap = trap_BotLibLoadMap;
-	proxy.trap->BotLibUpdateEntity = trap_BotLibUpdateEntity;
-	proxy.trap->BotLibTest = trap_BotLibTest;
-	proxy.trap->BotGetSnapshotEntity = trap_BotGetSnapshotEntity;
-	proxy.trap->BotGetServerCommand = trap_BotGetServerCommand;
-	proxy.trap->BotUserCommand = trap_BotUserCommand;
-	proxy.trap->BotUpdateWaypoints = trap_Bot_UpdateWaypoints;
-	proxy.trap->BotCalculatePaths = trap_Bot_CalculatePaths;
-	proxy.trap->AAS_EnableRoutingArea = trap_AAS_EnableRoutingArea;
-	proxy.trap->AAS_BBoxAreas = trap_AAS_BBoxAreas;
-	proxy.trap->AAS_AreaInfo = trap_AAS_AreaInfo;
-	proxy.trap->AAS_EntityInfo = trap_AAS_EntityInfo;
-	proxy.trap->AAS_Initialized = trap_AAS_Initialized;
-	proxy.trap->AAS_PresenceTypeBoundingBox = trap_AAS_PresenceTypeBoundingBox;
-	proxy.trap->AAS_Time = trap_AAS_Time;
-	proxy.trap->AAS_PointAreaNum = trap_AAS_PointAreaNum;
-	proxy.trap->AAS_TraceAreas = trap_AAS_TraceAreas;
-	proxy.trap->AAS_PointContents = trap_AAS_PointContents;
-	proxy.trap->AAS_NextBSPEntity = trap_AAS_NextBSPEntity;
-	proxy.trap->AAS_ValueForBSPEpairKey = trap_AAS_ValueForBSPEpairKey;
-	proxy.trap->AAS_VectorForBSPEpairKey = trap_AAS_VectorForBSPEpairKey;
-	proxy.trap->AAS_FloatForBSPEpairKey = trap_AAS_FloatForBSPEpairKey;
-	proxy.trap->AAS_IntForBSPEpairKey = trap_AAS_IntForBSPEpairKey;
-	proxy.trap->AAS_AreaReachability = trap_AAS_AreaReachability;
-	proxy.trap->AAS_AreaTravelTimeToGoalArea = trap_AAS_AreaTravelTimeToGoalArea;
-	proxy.trap->AAS_Swimming = trap_AAS_Swimming;
-	proxy.trap->AAS_PredictClientMovement = trap_AAS_PredictClientMovement;
-	proxy.trap->AAS_AlternativeRouteGoals = trap_AAS_AlternativeRouteGoals;
-	proxy.trap->AAS_PredictRoute = trap_AAS_PredictRoute;
-	proxy.trap->AAS_PointReachabilityAreaIndex = trap_AAS_PointReachabilityAreaIndex;
-	proxy.trap->EA_Say = trap_EA_Say;
-	proxy.trap->EA_SayTeam = trap_EA_SayTeam;
-	proxy.trap->EA_Command = trap_EA_Command;
-	proxy.trap->EA_Action = trap_EA_Action;
-	proxy.trap->EA_Gesture = trap_EA_Gesture;
-	proxy.trap->EA_Talk = trap_EA_Talk;
-	proxy.trap->EA_Attack = trap_EA_Attack;
-	proxy.trap->EA_Alt_Attack = trap_EA_Alt_Attack;
-	proxy.trap->EA_ForcePower = trap_EA_ForcePower;
-	proxy.trap->EA_Use = trap_EA_Use;
-	proxy.trap->EA_Respawn = trap_EA_Respawn;
-	proxy.trap->EA_Crouch = trap_EA_Crouch;
-	proxy.trap->EA_MoveUp = trap_EA_MoveUp;
-	proxy.trap->EA_MoveDown = trap_EA_MoveDown;
-	proxy.trap->EA_MoveForward = trap_EA_MoveForward;
-	proxy.trap->EA_MoveBack = trap_EA_MoveBack;
-	proxy.trap->EA_MoveLeft = trap_EA_MoveLeft;
-	proxy.trap->EA_MoveRight = trap_EA_MoveRight;
-	proxy.trap->EA_SelectWeapon = trap_EA_SelectWeapon;
-	proxy.trap->EA_Jump = trap_EA_Jump;
-	proxy.trap->EA_DelayedJump = trap_EA_DelayedJump;
-	proxy.trap->EA_Move = trap_EA_Move;
-	proxy.trap->EA_View = trap_EA_View;
-	proxy.trap->EA_EndRegular = trap_EA_EndRegular;
-	proxy.trap->EA_GetInput = trap_EA_GetInput;
-	proxy.trap->EA_ResetInput = trap_EA_ResetInput;
-	proxy.trap->PC_LoadSource = trap_PC_LoadSource;
-	proxy.trap->PC_FreeSource = trap_PC_FreeSource;
-	proxy.trap->PC_ReadToken = trap_PC_ReadToken;
-	proxy.trap->PC_SourceFileAndLine = trap_PC_SourceFileAndLine;
-	proxy.trap->R_RegisterSkin = trap_R_RegisterSkin;
-	proxy.trap->SetActiveSubBSP = trap_SetActiveSubBSP;
-	proxy.trap->CM_RegisterTerrain = trap_CM_RegisterTerrain;
-	proxy.trap->RMG_Init = trap_RMG_Init;
-	proxy.trap->G2API_ListModelBones = trap_G2_ListModelBones;
-	proxy.trap->G2API_ListModelSurfaces = trap_G2_ListModelSurfaces;
-	proxy.trap->G2API_HaveWeGhoul2Models = trap_G2_HaveWeGhoul2Models;
-	proxy.trap->G2API_SetGhoul2ModelIndexes = trap_G2_SetGhoul2ModelIndexes;
-	proxy.trap->G2API_GetBoltMatrix = trap_G2API_GetBoltMatrix;
-	proxy.trap->G2API_GetBoltMatrix_NoReconstruct = trap_G2API_GetBoltMatrix_NoReconstruct;
-	proxy.trap->G2API_GetBoltMatrix_NoRecNoRot = trap_G2API_GetBoltMatrix_NoRecNoRot;
-	proxy.trap->G2API_InitGhoul2Model = trap_G2API_InitGhoul2Model;
-	proxy.trap->G2API_SetSkin = trap_G2API_SetSkin;
-	proxy.trap->G2API_Ghoul2Size = trap_G2API_Ghoul2Size;
-	proxy.trap->G2API_AddBolt = trap_G2API_AddBolt;
-	proxy.trap->G2API_SetBoltInfo = trap_G2API_SetBoltInfo;
-	proxy.trap->G2API_SetBoneAngles = trap_G2API_SetBoneAngles;
-	proxy.trap->G2API_SetBoneAnim = trap_G2API_SetBoneAnim;
-	proxy.trap->G2API_GetBoneAnim = trap_G2API_GetBoneAnim;
-	proxy.trap->G2API_GetGLAName = trap_G2API_GetGLAName;
-	proxy.trap->G2API_CopyGhoul2Instance = trap_G2API_CopyGhoul2Instance;
-	proxy.trap->G2API_CopySpecificGhoul2Model = trap_G2API_CopySpecificGhoul2Model;
-	proxy.trap->G2API_DuplicateGhoul2Instance = trap_G2API_DuplicateGhoul2Instance;
-	proxy.trap->G2API_HasGhoul2ModelOnIndex = trap_G2API_HasGhoul2ModelOnIndex;
-	proxy.trap->G2API_RemoveGhoul2Model = trap_G2API_RemoveGhoul2Model;
-	proxy.trap->G2API_RemoveGhoul2Models = trap_G2API_RemoveGhoul2Models;
-	proxy.trap->G2API_CleanGhoul2Models = trap_G2API_CleanGhoul2Models;
-	proxy.trap->G2API_CollisionDetect = trap_G2API_CollisionDetect;
-	proxy.trap->G2API_CollisionDetectCache = trap_G2API_CollisionDetectCache;
-	proxy.trap->G2API_SetRootSurface = trap_G2API_SetRootSurface;
-	proxy.trap->G2API_SetSurfaceOnOff = trap_G2API_SetSurfaceOnOff;
-	proxy.trap->G2API_SetNewOrigin = trap_G2API_SetNewOrigin;
-	proxy.trap->G2API_DoesBoneExist = trap_G2API_DoesBoneExist;
-	proxy.trap->G2API_GetSurfaceRenderStatus = trap_G2API_GetSurfaceRenderStatus;
-	proxy.trap->G2API_AbsurdSmoothing = trap_G2API_AbsurdSmoothing;
-	proxy.trap->G2API_SetRagDoll = trap_G2API_SetRagDoll;
-	proxy.trap->G2API_AnimateG2Models = trap_G2API_AnimateG2Models;
-	proxy.trap->G2API_RagPCJConstraint = trap_G2API_RagPCJConstraint;
-	proxy.trap->G2API_RagPCJGradientSpeed = trap_G2API_RagPCJGradientSpeed;
-	proxy.trap->G2API_RagEffectorGoal = trap_G2API_RagEffectorGoal;
-	proxy.trap->G2API_GetRagBonePos = trap_G2API_GetRagBonePos;
-	proxy.trap->G2API_RagEffectorKick = trap_G2API_RagEffectorKick;
-	proxy.trap->G2API_RagForceSolve = trap_G2API_RagForceSolve;
-	proxy.trap->G2API_SetBoneIKState = trap_G2API_SetBoneIKState;
-	proxy.trap->G2API_IKMove = trap_G2API_IKMove;
-	proxy.trap->G2API_RemoveBone = trap_G2API_RemoveBone;
-	proxy.trap->G2API_AttachInstanceToEntNum = trap_G2API_AttachInstanceToEntNum;
-	proxy.trap->G2API_ClearAttachedInstance = trap_G2API_ClearAttachedInstance;
-	proxy.trap->G2API_CleanEntAttachments = trap_G2API_CleanEntAttachments;
-	proxy.trap->G2API_OverrideServer = trap_G2API_OverrideServer;
-	proxy.trap->G2API_GetSurfaceName = trap_G2API_GetSurfaceName;
 }

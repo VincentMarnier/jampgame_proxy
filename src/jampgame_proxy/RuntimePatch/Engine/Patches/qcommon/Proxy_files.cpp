@@ -1,6 +1,4 @@
 #include "jampgame_proxy/RuntimePatch/Engine/Proxy_Engine_Wrappers.hpp"
-#include "sdk/sys/sys_public.hpp"
-#include "jampgame_proxy/Imports/qcommon/cvar.hpp"
 #include "Proxy_files.hpp"
 
 const char* Proxy_FS_GetCurrentGameDir(bool emptybase)
@@ -8,7 +6,7 @@ const char* Proxy_FS_GetCurrentGameDir(bool emptybase)
 	if (server.common.cvars.fs_gamedirvar->string[0])
 		return server.common.cvars.fs_gamedirvar->string;
 
-	return emptybase ? "" : BASEGAME;
+	return emptybase ? "" : "base";
 }
 
 /*
@@ -27,23 +25,23 @@ void QDECL Proxy_Com_Printf(const char* fmt, ...)
 {
 	static qboolean opening_qconsole = qfalse;
 	va_list			argptr;
-	char			msg[MAXPRINTMSG];
+	char			msg[4096];
 
 	va_start(argptr, fmt);
 	// Proxy -------------->
-	Q_vsnprintf(msg, sizeof(msg), fmt, argptr);
+	vsnprintf(msg, sizeof(msg), fmt, argptr);
 	// Proxy <--------------
 	va_end(argptr);
 
 	if (*server.common.vars.rd_buffer)
 	{
-		if ((std::strlen(msg) + std::strlen(*server.common.vars.rd_buffer)) > (std::size_t)(*server.common.vars.rd_buffersize - 1))
+		if ((strlen(msg) + strlen(*server.common.vars.rd_buffer)) > (size_t)(*server.common.vars.rd_buffersize - 1))
 		{
 			(*server.common.vars.rd_flush)(*server.common.vars.rd_buffer);
 			**server.common.vars.rd_buffer = 0;
 		}
 
-		Q_strcat(*server.common.vars.rd_buffer, *server.common.vars.rd_buffersize, msg);
+		jampgame.functions.Q_strcat(*server.common.vars.rd_buffer, *server.common.vars.rd_buffersize, msg);
 
 		// TTimo nooo .. that would defeat the purpose
 		//(*server.common.vars.rd_flush)(*server.common.vars.rd_buffer);
@@ -93,7 +91,7 @@ void QDECL Proxy_Com_Printf(const char* fmt, ...)
 			{
 				server.common.functions.Com_Printf("Opening qconsole.log failed!\n");
 				
-				Cvar_SetValue("logfile", 0);
+				trap_Cvar_Set("logfile", 0);
 			}
 		}
 		// Proxy <--------------
@@ -102,7 +100,7 @@ void QDECL Proxy_Com_Printf(const char* fmt, ...)
 
 		if (*server.common.vars.logfile && server.common.functions.FS_Initialized())
 		{
-			server.common.functions.FS_Write(msg, (int)std::strlen(msg), *server.common.vars.logfile);
+			server.common.functions.FS_Write(msg, (int)strlen(msg), *server.common.vars.logfile);
 		}
 	}
 

@@ -4,6 +4,7 @@
 // Inspired by JMPProxy from DeathSpike (https://github.com/Deathspike/JMPProxy)
 // ==================================================
 
+#include <dlfcn.h>
 #include "Proxy_Main.hpp"
 #include "Proxy_Header.hpp"
 #include "Proxy_CVars.hpp"
@@ -11,8 +12,6 @@
 #include "RuntimePatch/Engine/Proxy_Engine_Patch.hpp"
 #include "RuntimePatch/Engine/Proxy_Engine_Wrappers.hpp"
 #include "Proxy_SharedAPI.hpp"
-#include "Proxy_Translate_SystemCalls.hpp"
-#include "Wrappers/Proxy_OpenJKAPI_Wrappers.hpp"
 #include "Wrappers/Proxy_OriginalAPI_Wrappers.hpp"
 
 Proxy_t proxy = { 0 };
@@ -23,35 +22,66 @@ static void Proxy_GetOriginalGameAPI(void)
 	// 2) The Proxy get the Original dllEntry
 	// 3) The Proxy send our own Proxy systemCall function pointer to the Original dllEntry
 	// 4) If there is a call to our Proxy's systemCall function it will call the Original systemCall function at the end of it
-	proxy.originalDllEntry = (dllEntryFuncPtr_t)JampgameProxy_GetFunctionAddress(proxy.jampgameHandle, "dllEntry");
+	proxy.originalDllEntry = (dllEntryFuncPtr_t)dlsym(proxy.jampgameHandle, "dllEntry");
 
 	if (!proxy.originalDllEntry)
 	{
-		proxy.trap->Print("================================================================\n");
-		proxy.trap->Print("----- Proxy: Failed to find dllEntry(), exiting\n");
-		proxy.trap->Print("================================================================\n");
+		fprintf(stderr, "================================================================\n");
+		fprintf(stderr, "----- Proxy: Failed to find dllEntry(), exiting\n");
+		fprintf(stderr, "================================================================\n");
 
 		exit(EXIT_FAILURE);
 	}
 
+	Dl_info info;
+	if (!dladdr((const void *)proxy.originalDllEntry, &info)) {
+		fprintf(stderr, "================================================================\n");
+		fprintf(stderr, "----- Proxy: Failed to find jampgame's address, exiting\n");
+		fprintf(stderr, "================================================================\n");
+
+		exit(EXIT_FAILURE);
+	}
+	proxy.jampgameAddress = (uintptr_t)info.dli_fbase;
+
 	// Engine -> Proxy vmMain -> Original vmMain
-	proxy.originalVmMain = (vmMainFuncPtr_t)JampgameProxy_GetFunctionAddress(proxy.jampgameHandle, "vmMain");
+	proxy.originalVmMain = (vmMainFuncPtr_t)dlsym(proxy.jampgameHandle, "vmMain");
 
 	if (!proxy.originalVmMain)
 	{
-		proxy.trap->Print("================================================================\n");
-		proxy.trap->Print("----- Proxy: Failed to find vmMain(), exiting\n");
-		proxy.trap->Print("================================================================\n");
+		fprintf(stderr, "================================================================\n");
+		fprintf(stderr, "----- Proxy: Failed to find vmMain(), exiting\n");
+		fprintf(stderr, "================================================================\n");
 
 		exit(EXIT_FAILURE);
 	}
 
+	// Engine -> Proxy level -> Original level
+	proxy.level = (level_locals_t *)dlsym(proxy.jampgameHandle, "level");
+	if (!proxy.level)
+	{
+		fprintf(stderr, "================================================================\n");
+		fprintf(stderr, "----- Proxy: Failed to find level, exiting\n");
+		fprintf(stderr, "================================================================\n");
+
+		exit(EXIT_FAILURE);
+	}
+
+	proxy.g_entities = (gentity_t *)dlsym(proxy.jampgameHandle, "g_entities");
+	if (!proxy.g_entities)
+	{
+		fprintf(stderr, "================================================================\n");
+		fprintf(stderr, "----- Proxy: Failed to find g_entities, exiting\n");
+		fprintf(stderr, "================================================================\n");
+
+		exit(EXIT_FAILURE);
+	}
+	
 	// "Send our own Proxy systemCall function pointer to the Original dllEntry"
 	proxy.originalDllEntry(Proxy_OriginalAPI_VM_DllSyscall);
 }
 
-Q_CABI Q_EXPORT intptr_t vmMain(intptr_t command, intptr_t arg0, intptr_t arg1, intptr_t arg2, intptr_t arg3, intptr_t arg4,
-	intptr_t arg5, intptr_t arg6, intptr_t arg7, intptr_t arg8, intptr_t arg9, intptr_t arg10)
+extern "C" __attribute__((visibility("default"))) int vmMain(int command, int arg0, int arg1, int arg2, int arg3, int arg4,
+	int arg5, int arg6, int arg7, int arg8, int arg9, int arg10)
 {
 	switch (command)
 	{
@@ -59,47 +89,47 @@ Q_CABI Q_EXPORT intptr_t vmMain(intptr_t command, intptr_t arg0, intptr_t arg1, 
 		case GAME_INIT: // (int levelTime, int randomSeed, int restart)
 		//==================================================
 		{
-			proxy.trap->Print("================================================================\n");
-			proxy.trap->Print("----- Proxy: %s %s\n", JAMPGAMEPROXY_NAME, JAMPGAMEPROXY_VERSION);
-			proxy.trap->Print("================================================================\n");
+			printf("================================================================\n");
+			printf("----- Proxy: " JAMPGAMEPROXY_NAME " " JAMPGAMEPROXY_VERSION "\n");
+			printf("================================================================\n");
 
-			proxy.trap->Print("----- Proxy: Loading original game library %s\n", PROXY_LIBRARY_NAME PROXY_LIBRARY_DOT PROXY_LIBRARY_EXT);
+			char version[MAX_STRING_CHARS];
+			trap_Cvar_VariableStringBuffer("version", version, sizeof(version));
+			if (strncmp(version, ORIGINAL_ENGINE_VERSION, sizeof(ORIGINAL_ENGINE_VERSION) - 1))
+			{
+				// This is not the original engine
+				fprintf(stderr, "================================================================\n");
+				fprintf(stderr, "----- Trying to run " JAMPGAMEPROXY_NAME " on a modified engine, exiting\n");
+				fprintf(stderr, "================================================================\n");
+
+				exit(EXIT_FAILURE);
+			}
+
+			printf("----- Proxy: Loading original game library " PROXY_LIBRARY_NAME "\n");
 
 			Proxy_LoadGameLibrary();
 
 			Proxy_GetOriginalGameAPI();
 
-			proxy.trap->Print("----- Proxy: %s properly loaded\n", PROXY_LIBRARY_NAME PROXY_LIBRARY_DOT PROXY_LIBRARY_EXT);
+			printf("----- Proxy: " PROXY_LIBRARY_NAME " properly loaded\n");
 			
-			proxy.trap->Print("----- Proxy: Initializing Proxy CVars\n");
+			printf("----- Proxy: Initializing Proxy CVars\n");
 
 			Proxy_CVars_Registration();
 
-			proxy.trap->Print("----- Proxy: Proxy CVars properly initialized\n");
+			printf("----- Proxy: Proxy CVars properly initialized\n");
 
-			char version[MAX_STRING_CHARS];
+			printf("----- Proxy: Original engine detected\n");
 
-			proxy.trap->Cvar_VariableStringBuffer("version", version, sizeof(version));
+			Proxy_Engine_Initialize_MemoryLayer();
+			Proxy_OriginalEngine_CVars_Registration();
+			
+			printf("----- Proxy: Patching engine\n");
 
-			if (!Q_stricmpn(version, ORIGINAL_ENGINE_VERSION, sizeof(ORIGINAL_ENGINE_VERSION) - 1))
-			{
-				proxy.isOriginalEngine = true;
-			}
+			Proxy_Engine_Inline_Patches();
+			Proxy_Engine_Attach_Patches();
 
-			if (proxy.isOriginalEngine)
-			{
-				proxy.trap->Print("----- Proxy: Original engine detected\n");
-
-				Proxy_Engine_Initialize_MemoryLayer();
-				Proxy_OriginalEngine_CVars_Registration();
-				
-				proxy.trap->Print("----- Proxy: Patching engine\n");
-
-				Proxy_Engine_Inline_Patches();
-				Proxy_Engine_Attach_Patches();
-
-				proxy.trap->Print("----- Proxy: Engine properly patched\n");
-			}
+			printf("----- Proxy: Engine properly patched\n");
 
 			break;
 		}
@@ -107,32 +137,29 @@ Q_CABI Q_EXPORT intptr_t vmMain(intptr_t command, intptr_t arg0, intptr_t arg1, 
 		case GAME_SHUTDOWN: // (int restart)
 		//==================================================
 		{
-			if (proxy.isOriginalEngine)
-			{
-				// On "rcon map XXX" or "rcon map_restart 0" it directly goes there from SVC_RemoteCommand
-				// the problem here is that Com_EndRedirect() isn't called after the
-				// Cmd_ExecuteString() of the map change
-				// We need to manually call the Com_EndRedirect()
-				server.common.functions.Com_EndRedirect();
+			// On "rcon map XXX" or "rcon map_restart 0" it directly goes there from SVC_RemoteCommand
+			// the problem here is that Com_EndRedirect() isn't called after the
+			// Cmd_ExecuteString() of the map change
+			// We need to manually call the Com_EndRedirect()
+			server.common.functions.Com_EndRedirect();
 
-				proxy.trap->Print("----- Proxy: Unpatching engine\n");
+			printf("----- Proxy: Unpatching engine\n");
 
-				Proxy_Engine_Detach_Patches();
+			Proxy_Engine_Detach_Patches();
 
-				proxy.trap->Print("----- Proxy: Engine properly unpatched\n");
-			}
+			printf("----- Proxy: Engine properly unpatched\n");
 
 			if (proxy.jampgameHandle)
 			{
 				// Send the shutdown signal to the original game module and store the response
 				proxy.originalVmMainResponse = proxy.originalVmMain(command, arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8, arg9, arg10);
 
-				proxy.trap->Print("----- Proxy: Unloading original game library %s\n", PROXY_LIBRARY_NAME PROXY_LIBRARY_DOT PROXY_LIBRARY_EXT);
+				printf("----- Proxy: Unloading original game library " PROXY_LIBRARY_NAME "\n");
 
 				// We can close the original game library
-				JampgameProxy_CloseLibrary(proxy.jampgameHandle);
+				dlclose(proxy.jampgameHandle);
 
-				proxy.trap->Print("----- Proxy: %s properly unloaded\n", PROXY_LIBRARY_NAME PROXY_LIBRARY_DOT PROXY_LIBRARY_EXT);
+				printf("----- Proxy: " PROXY_LIBRARY_NAME " properly unloaded\n");
 
 				// Return the response of the original game module after the shutdown
 				return proxy.originalVmMainResponse;
@@ -216,60 +243,6 @@ Q_CABI Q_EXPORT intptr_t vmMain(intptr_t command, intptr_t arg0, intptr_t arg1, 
 }
 
 // The engine sends the system call function pointer to the game module through dllEntry
-Q_CABI Q_EXPORT void dllEntry(systemCallFuncPtr_t systemCallFuncPtdr) {
+extern "C" __attribute__((visibility("default"))) void dllEntry(systemCallFuncPtr_t systemCallFuncPtdr) {
 	proxy.originalSystemCall = systemCallFuncPtdr;
-
-	// Create trap calls available directly within the proxy (proxy.trap->*)
-	Proxy_Translate_SystemCalls();
-}
-
-Q_CABI Q_EXPORT gameExport_t* QDECL GetModuleAPI(int apiVersion, gameImport_t* import)
-{
-	assert(import);
-
-	// Needed for trap_... calls inside of the proxy
-	proxy.trap = import;
-
-	Com_Printf = proxy.trap->Print;
-	Com_Error = proxy.trap->Error;
-
-	if (apiVersion != GAME_API_VERSION)
-	{
-		proxy.trap->Print("=========================================================================\n");
-		proxy.trap->Print("----- Proxy: Mismatched GAME_API_VERSION: expected %i, got %i, exiting\n", GAME_API_VERSION, apiVersion);
-		proxy.trap->Print("=========================================================================\n");
-
-		return nullptr;
-	}
-
-	Proxy_LoadGameLibrary();
-
-	GetGameAPI_t jampGameGetModuleAPI = (GetGameAPI_t)JampgameProxy_GetFunctionAddress(proxy.jampgameHandle, "GetModuleAPI");
-
-	if (!jampGameGetModuleAPI)
-	{
-		proxy.trap->Print("==================================================================================\n");
-		proxy.trap->Print("----- Proxy: Failed to find GetModuleAPI function, loading vmMain and dllEntry\n");
-		proxy.trap->Print("==================================================================================\n");
-
-		Proxy_GetOriginalGameAPI();
-
-		return nullptr;
-	}
-
-	static gameImport_t _copyOpenJKAPIGameImportTable = { 0 };
-	static gameExport_t _copyOpenJKAPIGameExportTable = { 0 };
-
-	proxy.originalOpenJKAPIGameImportTable = import;
-	std::memcpy(&_copyOpenJKAPIGameImportTable, import, sizeof(gameImport_t));
-	proxy.copyOpenJKAPIGameImportTable = &_copyOpenJKAPIGameImportTable;
-
-	proxy.originalOpenJKAPIGameExportTable = jampGameGetModuleAPI(apiVersion, &_copyOpenJKAPIGameImportTable);
-	std::memcpy(&_copyOpenJKAPIGameExportTable, proxy.originalOpenJKAPIGameExportTable, sizeof(gameExport_t));
-	proxy.copyOpenJKAPIGameExportTable = &_copyOpenJKAPIGameExportTable;
-
-	Proxy_OpenJKAPI_InitLayerExportTable();
-	Proxy_OpenJKAPI_InitLayerImportTable();
-
-	return proxy.copyOpenJKAPIGameExportTable;
 }

@@ -77,7 +77,7 @@
 // 	__sh_Prologue;
 // 	{
 // 		__asm1__( push	zMessage	)
-// 		__asm1__( call	printf		)
+// 		__asm1__( call	Com_Printf		)
 // 		__asm2__( add	esp, 4		)
 // 		__asm1__( ret			)
 // 	}
