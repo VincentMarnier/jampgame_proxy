@@ -83,6 +83,8 @@ set(JampgameProxyFiles ${JampgameProxyFiles} ${JampgameProxyRuntimePatchEngineFi
 #============================================================================
 
 set(JampgameProxyRuntimePatchEnginePatchesGameFiles
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/game/Proxy_g_cmds.cpp"
+	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/game/Proxy_g_cmds.hpp"
 	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/game/Proxy_g_combat.cpp"
 	"${JampgameProxyDir}/jampgame_proxy/RuntimePatch/Engine/Patches/game/Proxy_g_combat.hpp"
 	)
