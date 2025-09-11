@@ -1,4 +1,4 @@
-FROM i386/debian:trixie
+FROM i386/debian:bookworm
 
 WORKDIR /jka
 RUN apt update && apt install -y wget unzip
