@@ -31,7 +31,7 @@
 #define ORIGINAL_ENGINE_VERSION "JAmp: v1.0.1.1 linux-i386 Nov 10 2003"
 
 #define JAMPGAMEPROXY_NAME "jampgame_proxy"
-#define JAMPGAMEPROXY_VERSION "0.0.2"
+#define JAMPGAMEPROXY_VERSION "0.0.3"
 
 // ==================================================
 // TYPEDEF
