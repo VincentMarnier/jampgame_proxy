@@ -33,6 +33,10 @@ docker run --rm -it \
     +set fraglimit 1 \
     +set timelimit 0 \
     +set g_forcepowerdisable 163837 \
+    +set g_friendlyFire 1 \
+    +set g_friendlySaber 1 \
     +map mp/duel1 \
-    +addbot cultist
+    +addbot cultist \
+    +addbot desann \
+    +addbot reborn
     

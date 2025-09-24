@@ -31,7 +31,7 @@
 #define ORIGINAL_ENGINE_VERSION "JAmp: v1.0.1.1 linux-i386 Nov 10 2003"
 
 #define JAMPGAMEPROXY_NAME "jampgame_proxy"
-#define JAMPGAMEPROXY_VERSION "0.0.3"
+#define JAMPGAMEPROXY_VERSION "0.0.4"
 
 // ==================================================
 // TYPEDEF
@@ -99,6 +99,10 @@ struct ClientData_t
 	size_t			cmdIndex;
 
 	GameStats_t gameStats[MAX_CLIENTS];
+	int teamKills;
+	int teamKilled;
+	int teamDamagesGiven;
+	int teamDamagesTaken;
 };
 
 struct Proxy_OriginalEngine_CVars_t
