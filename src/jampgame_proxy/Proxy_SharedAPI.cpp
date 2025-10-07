@@ -1,6 +1,5 @@
 #include "Proxy_Header.hpp"
 #include <sdk/server/server.h>
-#include "Proxy_ClientCommand.hpp"
 #include <sdk/server/server.h>
 #include "Proxy_SharedAPI.hpp"
 #include "Imports/game/g_cmds.hpp"
@@ -202,13 +201,6 @@ qboolean Proxy_SharedAPI_ClientCommand(int clientNum)
 
 	if (!sayCmd && Q_strchrs(argsConcat, ";"))
 	{
-		return qfalse;
-	}
-
-	if (!jampgame.functions.Q_stricmpn(cmd, "myratio", 7))
-	{
-		Proxy_ClientCommand_MyRatio(clientNum);
-
 		return qfalse;
 	}
 

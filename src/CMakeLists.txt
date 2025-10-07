@@ -13,8 +13,6 @@ set(JampgameProxyIncludeDirectories "${JampgameProxyDir}")
 
 set(JampgameProxyDefines ${MPSharedDefines} "_GAME" )
 set(JampgameProxyMainFiles
-	"${JampgameProxyDir}/jampgame_proxy/Proxy_ClientCommand.cpp"
-	"${JampgameProxyDir}/jampgame_proxy/Proxy_ClientCommand.hpp"
 	"${JampgameProxyDir}/jampgame_proxy/Proxy_CVars.cpp"
 	"${JampgameProxyDir}/jampgame_proxy/Proxy_CVars.hpp"
 	"${JampgameProxyDir}/jampgame_proxy/Proxy_Files.cpp"
